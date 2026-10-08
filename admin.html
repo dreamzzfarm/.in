@@ -1,1 +1,5266 @@
-<!DOCTYPE html><html lang="en"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>DREAMZZ Admin</title><style>@import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;600;700;800&family=Playfair+Display:wght@700&display=swap');:root{--g:#02462e;--gold:#fec700;--cream:#f7f5ed;--muted:#68736d}*{box-sizing:border-box}body{margin:0;background:var(--cream);font-family:'DM Sans';color:#101412}.head{background:#fff;border-bottom:1px solid #e5e8e4;padding:17px 6%;display:flex;justify-content:space-between;align-items:center}.logo{font-weight:800;font-size:21px}.logo span{display:inline-grid;place-items:center;background:var(--gold);color:var(--g);width:32px;height:32px;border-radius:9px;margin-right:6px}.head a{color:var(--g);font-weight:800;text-decoration:none}.wrap{max-width:1200px;margin:auto;padding:40px 5%}.ey{color:var(--g);font-size:11px;font-weight:800;letter-spacing:2px}.wrap h1{font:700 40px 'Playfair Display';margin:8px 0 25px}.card{background:#fff;border:1px solid #e5e8e4;border-radius:18px;padding:22px;overflow:auto}table{width:100%;border-collapse:collapse;min-width:850px}th,td{text-align:left;padding:13px;border-bottom:1px solid #e5e8e4;font-size:13px}th{color:var(--muted);font-size:11px;text-transform:uppercase}select,input{padding:9px;border:1px solid #ddd;border-radius:7px}button{background:var(--g);color:#fff;border:0;padding:9px 12px;border-radius:7px;font-weight:700;cursor:pointer}.empty{text-align:center;color:var(--muted);padding:35px}</style></head><body><header class="head"><div class="logo"><span>D</span>DREAMZZ ADMIN</div><a href="account.html">Customer view</a></header><main class="wrap"><div class="ey">MILK DELIVERY CONTROL</div><h1>Customers & Subscriptions</h1><div class="card"><table><thead><tr><th>Customer</th><th>Phone/Email</th><th>Daily Milk</th><th>Active</th><th>Payment</th><th>Delivery</th><th>Renewal</th><th>Save</th></tr></thead><tbody id="rows"></tbody></table><div id="empty" class="empty" style="display:none">No customers registered yet.</div></div></main><script>const key='dreamzzUsers';let users=JSON.parse(localStorage.getItem(key)||'[]');const rows=document.getElementById('rows'),empty=document.getElementById('empty');function render(){rows.innerHTML='';empty.style.display=users.length?'none':'block';users.forEach((u,i)=>{const m=u.milk||{};rows.innerHTML+=`<tr><td><strong>${u.name}</strong></td><td>${u.email}</td><td><input id="l${i}" type="number" min="0.25" step="0.25" value="${m.litres||1}" style="width:70px"> L</td><td><select id="a${i}"><option value="true" ${m.active?'selected':''}>ACTIVE</option><option value="false" ${!m.active?'selected':''}>INACTIVE</option></select></td><td><select id="p${i}"><option ${m.payment==='PAID'?'selected':''}>PAID</option><option ${m.payment!=='PAID'?'selected':''}>UNPAID</option></select></td><td><select id="d${i}"><option ${m.delivery==='Morning delivery'?'selected':''}>Morning delivery</option><option ${m.delivery==='Paused'?'selected':''}>Paused</option><option ${m.delivery==='Not started'?'selected':''}>Not started</option></select></td><td><input id="r${i}" type="date" value="${m.renewal||''}"></td><td><button onclick="save(${i})">Save</button></td></tr>`})}function save(i){users[i].milk=users[i].milk||{};users[i].milk.litres=Number(document.getElementById('l'+i).value)||1;users[i].milk.active=document.getElementById('a'+i).value==='true';users[i].milk.payment=document.getElementById('p'+i).value;users[i].milk.delivery=document.getElementById('d'+i).value;users[i].milk.renewal=document.getElementById('r'+i).value;users[i].milk.plan='Monthly';localStorage.setItem(key,JSON.stringify(users));alert('Customer status updated.')}render();</script></body></html>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>DREAMZZ Admin Dashboard</title>
+
+<style>
+@import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700;800&family=Playfair+Display:wght@600;700&display=swap');
+
+:root{
+    --green:#02462e;
+    --green2:#08734d;
+    --gold:#fec700;
+    --cream:#f5f7f4;
+    --dark:#101412;
+    --muted:#69756f;
+    --white:#fff;
+    --border:#e3e8e4;
+    --red:#c62828;
+    --orange:#ef8c00;
+    --blue:#2867c7;
+    --shadow:0 10px 35px rgba(2,70,46,.08);
+}
+
+*{
+    box-sizing:border-box;
+}
+
+html{
+    scroll-behavior:smooth;
+}
+
+body{
+    margin:0;
+    font-family:'DM Sans',sans-serif;
+    background:var(--cream);
+    color:var(--dark);
+}
+
+/* =====================================================
+   LOGIN PROTECTION
+===================================================== */
+
+.login-screen{
+    min-height:100vh;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    padding:25px;
+    background:
+        radial-gradient(circle at top right,#dcefe5,transparent 35%),
+        var(--cream);
+}
+
+.login-box{
+    width:100%;
+    max-width:420px;
+    background:white;
+    border:1px solid var(--border);
+    border-radius:22px;
+    padding:35px;
+    box-shadow:var(--shadow);
+    text-align:center;
+}
+
+.login-logo{
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    gap:8px;
+    font-weight:800;
+    font-size:24px;
+}
+
+.login-logo span{
+    width:38px;
+    height:38px;
+    border-radius:10px;
+    background:var(--gold);
+    color:var(--green);
+    display:grid;
+    place-items:center;
+}
+
+.login-box h1{
+    font:700 30px 'Playfair Display',serif;
+    margin:25px 0 8px;
+}
+
+.login-box p{
+    color:var(--muted);
+    font-size:13px;
+}
+
+.login-box input{
+    width:100%;
+    padding:14px;
+    margin-top:12px;
+    border:1px solid var(--border);
+    border-radius:10px;
+    outline:none;
+    font-family:inherit;
+}
+
+.login-box button{
+    width:100%;
+    margin-top:15px;
+    border:0;
+    padding:14px;
+    border-radius:10px;
+    background:var(--green);
+    color:white;
+    font-weight:800;
+    cursor:pointer;
+}
+
+/* =====================================================
+   APP
+===================================================== */
+
+.app{
+    display:none;
+}
+
+.app.show{
+    display:block;
+}
+
+/* =====================================================
+   SIDEBAR
+===================================================== */
+
+.sidebar{
+    position:fixed;
+    left:0;
+    top:0;
+    bottom:0;
+    width:245px;
+    background:var(--green);
+    color:white;
+    padding:25px 15px;
+    z-index:100;
+    overflow-y:auto;
+}
+
+.brand{
+    display:flex;
+    align-items:center;
+    gap:9px;
+    padding:0 10px 28px;
+    border-bottom:1px solid rgba(255,255,255,.12);
+}
+
+.brand-mark{
+    width:40px;
+    height:40px;
+    border-radius:11px;
+    background:var(--gold);
+    color:var(--green);
+    display:grid;
+    place-items:center;
+    font-weight:900;
+}
+
+.brand-text{
+    font-size:20px;
+    font-weight:800;
+}
+
+.brand-text small{
+    display:block;
+    color:#b8d5c8;
+    font-size:9px;
+    letter-spacing:1.5px;
+    margin-top:2px;
+}
+
+.nav{
+    margin-top:22px;
+}
+
+.nav-title{
+    color:#86ae9d;
+    font-size:10px;
+    font-weight:800;
+    letter-spacing:1.5px;
+    padding:0 12px 9px;
+}
+
+.nav button{
+    width:100%;
+    border:0;
+    background:transparent;
+    color:#d9ebe3;
+    padding:12px;
+    border-radius:9px;
+    display:flex;
+    align-items:center;
+    gap:11px;
+    cursor:pointer;
+    font-family:inherit;
+    font-weight:600;
+    text-align:left;
+    margin-bottom:3px;
+}
+
+.nav button:hover,
+.nav button.active{
+    background:rgba(255,255,255,.11);
+    color:white;
+}
+
+.nav-icon{
+    width:22px;
+    text-align:center;
+}
+
+.nav-badge{
+    margin-left:auto;
+    background:var(--gold);
+    color:var(--green);
+    min-width:20px;
+    height:20px;
+    border-radius:20px;
+    display:grid;
+    place-items:center;
+    font-size:10px;
+    font-weight:900;
+}
+
+.sidebar-bottom{
+    position:absolute;
+    left:15px;
+    right:15px;
+    bottom:18px;
+}
+
+.logout{
+    width:100%;
+    border:1px solid rgba(255,255,255,.16);
+    background:rgba(255,255,255,.06);
+    color:white;
+    padding:11px;
+    border-radius:9px;
+    cursor:pointer;
+    font-family:inherit;
+    font-weight:700;
+}
+
+/* =====================================================
+   MAIN
+===================================================== */
+
+.main{
+    margin-left:245px;
+    min-height:100vh;
+}
+
+.topbar{
+    height:72px;
+    background:white;
+    border-bottom:1px solid var(--border);
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    padding:0 30px;
+    position:sticky;
+    top:0;
+    z-index:50;
+}
+
+.mobile-menu{
+    display:none;
+    border:0;
+    background:none;
+    font-size:24px;
+    cursor:pointer;
+}
+
+.search{
+    width:350px;
+    position:relative;
+}
+
+.search input{
+    width:100%;
+    padding:11px 14px 11px 40px;
+    border:1px solid var(--border);
+    border-radius:9px;
+    background:#f8faf8;
+    outline:none;
+    font-family:inherit;
+}
+
+.search-icon{
+    position:absolute;
+    left:14px;
+    top:10px;
+    color:var(--muted);
+}
+
+.top-actions{
+    display:flex;
+    align-items:center;
+    gap:18px;
+}
+
+.notification{
+    position:relative;
+    border:0;
+    background:#f1f5f2;
+    width:40px;
+    height:40px;
+    border-radius:50%;
+    cursor:pointer;
+    font-size:17px;
+}
+
+.notification-dot{
+    position:absolute;
+    top:7px;
+    right:7px;
+    width:8px;
+    height:8px;
+    background:var(--red);
+    border-radius:50%;
+    border:2px solid white;
+}
+
+.admin-user{
+    display:flex;
+    align-items:center;
+    gap:10px;
+}
+
+.avatar{
+    width:38px;
+    height:38px;
+    background:var(--gold);
+    color:var(--green);
+    border-radius:50%;
+    display:grid;
+    place-items:center;
+    font-weight:900;
+}
+
+.admin-user strong{
+    display:block;
+    font-size:13px;
+}
+
+.admin-user span{
+    display:block;
+    color:var(--muted);
+    font-size:10px;
+}
+
+/* =====================================================
+   CONTENT
+===================================================== */
+
+.content{
+    padding:30px;
+}
+
+.page{
+    display:none;
+}
+
+.page.active{
+    display:block;
+}
+
+.page-heading{
+    display:flex;
+    justify-content:space-between;
+    align-items:flex-start;
+    margin-bottom:25px;
+}
+
+.page-heading h1{
+    margin:0;
+    font:700 31px 'Playfair Display',serif;
+}
+
+.page-heading p{
+    margin:7px 0 0;
+    color:var(--muted);
+    font-size:13px;
+}
+
+.primary-btn{
+    border:0;
+    background:var(--green);
+    color:white;
+    padding:12px 17px;
+    border-radius:9px;
+    cursor:pointer;
+    font-family:inherit;
+    font-weight:800;
+}
+
+.secondary-btn{
+    border:1px solid var(--border);
+    background:white;
+    color:var(--dark);
+    padding:11px 15px;
+    border-radius:9px;
+    cursor:pointer;
+    font-family:inherit;
+    font-weight:700;
+}
+
+/* =====================================================
+   STAT CARDS
+===================================================== */
+
+.stats{
+    display:grid;
+    grid-template-columns:repeat(4,1fr);
+    gap:17px;
+    margin-bottom:25px;
+}
+
+.stat{
+    background:white;
+    border:1px solid var(--border);
+    border-radius:15px;
+    padding:20px;
+    box-shadow:0 5px 18px rgba(0,0,0,.025);
+}
+
+.stat-top{
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+}
+
+.stat-icon{
+    width:40px;
+    height:40px;
+    border-radius:10px;
+    background:#edf5f0;
+    display:grid;
+    place-items:center;
+    font-size:18px;
+}
+
+.stat-change{
+    font-size:10px;
+    font-weight:800;
+    color:var(--green2);
+    background:#e8f5ec;
+    padding:5px 7px;
+    border-radius:20px;
+}
+
+.stat h2{
+    margin:15px 0 2px;
+    font-size:27px;
+}
+
+.stat p{
+    margin:0;
+    color:var(--muted);
+    font-size:11px;
+    font-weight:600;
+}
+
+/* =====================================================
+   DASHBOARD GRID
+===================================================== */
+
+.dashboard-grid{
+    display:grid;
+    grid-template-columns:1.45fr .75fr;
+    gap:20px;
+}
+
+.card{
+    background:white;
+    border:1px solid var(--border);
+    border-radius:15px;
+    padding:22px;
+    margin-bottom:20px;
+}
+
+.card-title{
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    margin-bottom:18px;
+}
+
+.card-title h2{
+    margin:0;
+    font-size:17px;
+}
+
+.card-title a{
+    color:var(--green);
+    font-size:11px;
+    font-weight:800;
+    cursor:pointer;
+}
+
+/* =====================================================
+   CHART
+===================================================== */
+
+.chart{
+    height:260px;
+    display:flex;
+    align-items:flex-end;
+    gap:12px;
+    padding:20px 5px 0;
+}
+
+.bar-wrap{
+    flex:1;
+    height:100%;
+    display:flex;
+    flex-direction:column;
+    justify-content:flex-end;
+    align-items:center;
+    gap:7px;
+}
+
+.bar{
+    width:100%;
+    max-width:38px;
+    min-height:4px;
+    background:var(--green);
+    border-radius:7px 7px 2px 2px;
+}
+
+.bar-label{
+    color:var(--muted);
+    font-size:9px;
+}
+
+/* =====================================================
+   TABLE
+===================================================== */
+
+.table-wrap{
+    overflow-x:auto;
+}
+
+table{
+    width:100%;
+    border-collapse:collapse;
+}
+
+th{
+    text-align:left;
+    color:var(--muted);
+    font-size:10px;
+    font-weight:800;
+    padding:12px;
+    border-bottom:1px solid var(--border);
+    white-space:nowrap;
+}
+
+td{
+    padding:13px 12px;
+    border-bottom:1px solid #eef1ef;
+    font-size:12px;
+    vertical-align:middle;
+}
+
+tr:last-child td{
+    border-bottom:0;
+}
+
+.order-number{
+    color:var(--green);
+    font-weight:800;
+}
+
+.customer-name{
+    font-weight:700;
+}
+
+.customer-phone{
+    color:var(--muted);
+    font-size:10px;
+    margin-top:3px;
+}
+
+.status{
+    display:inline-block;
+    padding:5px 9px;
+    border-radius:20px;
+    font-size:9px;
+    font-weight:800;
+}
+
+.status.new{
+    background:#fff4d7;
+    color:#916600;
+}
+
+.status.accepted{
+    background:#e7f0ff;
+    color:#2867c7;
+}
+
+.status.processing{
+    background:#eee8ff;
+    color:#6846c7;
+}
+
+.status.out{
+    background:#e5f3ff;
+    color:#0874aa;
+}
+
+.status.delivered{
+    background:#e5f5e9;
+    color:#13713d;
+}
+
+.status.cancelled{
+    background:#ffe7e7;
+    color:#b21f1f;
+}
+
+.action-btn{
+    border:1px solid var(--border);
+    background:white;
+    padding:7px 9px;
+    border-radius:7px;
+    cursor:pointer;
+    font-size:11px;
+    font-family:inherit;
+    font-weight:700;
+}
+
+.action-btn:hover{
+    border-color:var(--green);
+    color:var(--green);
+}
+
+/* =====================================================
+   ORDER FILTERS
+===================================================== */
+
+.filters{
+    display:flex;
+    gap:10px;
+    flex-wrap:wrap;
+    margin-bottom:18px;
+}
+
+.filters input,
+.filters select{
+    padding:10px 12px;
+    border:1px solid var(--border);
+    border-radius:8px;
+    background:white;
+    outline:none;
+    font-family:inherit;
+    font-size:12px;
+}
+
+/* =====================================================
+   QUICK STATUS
+===================================================== */
+
+.status-buttons{
+    display:flex;
+    flex-wrap:wrap;
+    gap:6px;
+}
+
+.status-btn{
+    border:1px solid var(--border);
+    background:white;
+    padding:6px 8px;
+    border-radius:6px;
+    font-size:9px;
+    cursor:pointer;
+    font-family:inherit;
+}
+
+.status-btn:hover{
+    background:#f0f6f2;
+}
+
+/* =====================================================
+   CUSTOMER CARDS
+===================================================== */
+
+.customer-grid{
+    display:grid;
+    grid-template-columns:repeat(3,1fr);
+    gap:15px;
+}
+
+.customer-card{
+    background:white;
+    border:1px solid var(--border);
+    border-radius:14px;
+    padding:18px;
+}
+
+.customer-avatar{
+    width:44px;
+    height:44px;
+    border-radius:50%;
+    background:#e8f3ed;
+    display:grid;
+    place-items:center;
+    color:var(--green);
+    font-weight:900;
+    margin-bottom:12px;
+}
+
+.customer-card h3{
+    margin:0;
+    font-size:15px;
+}
+
+.customer-card p{
+    margin:5px 0;
+    color:var(--muted);
+    font-size:11px;
+}
+
+/* =====================================================
+   PRODUCTS
+===================================================== */
+
+.product-grid{
+    display:grid;
+    grid-template-columns:repeat(4,1fr);
+    gap:15px;
+}
+
+.product-card{
+    background:white;
+    border:1px solid var(--border);
+    border-radius:14px;
+    overflow:hidden;
+}
+
+.product-image{
+    height:145px;
+    background:#edf4ee;
+    display:grid;
+    place-items:center;
+    font-size:65px;
+}
+
+.product-body{
+    padding:15px;
+}
+
+.product-body h3{
+    margin:0 0 6px;
+    font-size:14px;
+}
+
+.product-meta{
+    display:flex;
+    justify-content:space-between;
+    color:var(--muted);
+    font-size:10px;
+}
+
+.stock{
+    margin-top:12px;
+    height:6px;
+    background:#e9eeeb;
+    border-radius:20px;
+    overflow:hidden;
+}
+
+.stock span{
+    display:block;
+    height:100%;
+    background:var(--green2);
+}
+
+.product-actions{
+    display:flex;
+    gap:7px;
+    margin-top:12px;
+}
+
+.product-actions button{
+    flex:1;
+    padding:8px;
+    border-radius:7px;
+    border:1px solid var(--border);
+    background:white;
+    cursor:pointer;
+    font-family:inherit;
+    font-size:10px;
+    font-weight:700;
+}
+
+/* =====================================================
+   SUBSCRIPTION
+===================================================== */
+
+.subscription-grid{
+    display:grid;
+    grid-template-columns:repeat(3,1fr);
+    gap:15px;
+}
+
+.subscription-card{
+    background:white;
+    border:1px solid var(--border);
+    border-radius:14px;
+    padding:18px;
+}
+
+.subscription-card h3{
+    margin:0;
+    font-size:15px;
+}
+
+.subscription-card .milk{
+    font-size:28px;
+    margin-bottom:10px;
+}
+
+.subscription-info{
+    margin-top:12px;
+    display:grid;
+    gap:7px;
+}
+
+.subscription-info div{
+    display:flex;
+    justify-content:space-between;
+    font-size:11px;
+}
+
+.subscription-info span:first-child{
+    color:var(--muted);
+}
+
+/* =====================================================
+   MODAL
+===================================================== */
+
+.modal-overlay{
+    display:none;
+    position:fixed;
+    inset:0;
+    background:rgba(0,0,0,.55);
+    z-index:500;
+    padding:20px;
+    align-items:center;
+    justify-content:center;
+}
+
+.modal-overlay.show{
+    display:flex;
+}
+
+.modal{
+    width:100%;
+    max-width:700px;
+    max-height:90vh;
+    overflow:auto;
+    background:white;
+    border-radius:18px;
+    padding:25px;
+}
+
+.modal-head{
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    margin-bottom:20px;
+}
+
+.modal-head h2{
+    margin:0;
+    font-size:21px;
+}
+
+.close{
+    border:0;
+    background:#f0f3f0;
+    width:35px;
+    height:35px;
+    border-radius:50%;
+    cursor:pointer;
+    font-size:18px;
+}
+
+.detail-grid{
+    display:grid;
+    grid-template-columns:1fr 1fr;
+    gap:15px;
+}
+
+.detail{
+    padding:13px;
+    border:1px solid var(--border);
+    border-radius:10px;
+}
+
+.detail label{
+    display:block;
+    color:var(--muted);
+    font-size:9px;
+    font-weight:800;
+    margin-bottom:4px;
+}
+
+.detail strong{
+    font-size:12px;
+}
+
+.detail.full{
+    grid-column:1/-1;
+}
+
+.item-list{
+    margin-top:18px;
+}
+
+.item-row{
+    display:flex;
+    align-items:center;
+    gap:12px;
+    padding:12px 0;
+    border-bottom:1px solid var(--border);
+}
+
+.item-emoji{
+    width:42px;
+    height:42px;
+    border-radius:9px;
+    background:#edf4ee;
+    display:grid;
+    place-items:center;
+    font-size:22px;
+}
+
+.item-row div:nth-child(2){
+    flex:1;
+}
+
+.item-row strong{
+    display:block;
+    font-size:12px;
+}
+
+.item-row small{
+    color:var(--muted);
+    font-size:10px;
+}
+
+.modal-actions{
+    display:flex;
+    gap:8px;
+    flex-wrap:wrap;
+    margin-top:20px;
+}
+
+/* =====================================================
+   ALERTS
+===================================================== */
+
+.alert-list{
+    display:grid;
+    gap:10px;
+}
+
+.alert{
+    display:flex;
+    align-items:center;
+    gap:12px;
+    padding:12px;
+    border-radius:10px;
+    background:#f8faf8;
+}
+
+.alert-icon{
+    width:35px;
+    height:35px;
+    border-radius:9px;
+    display:grid;
+    place-items:center;
+    background:#fff4d7;
+}
+
+.alert strong{
+    font-size:12px;
+    display:block;
+}
+
+.alert span{
+    color:var(--muted);
+    font-size:10px;
+}
+
+/* =====================================================
+   SETTINGS
+===================================================== */
+
+.settings-grid{
+    display:grid;
+    grid-template-columns:1fr 1fr;
+    gap:20px;
+}
+
+.form-group{
+    margin-bottom:15px;
+}
+
+.form-group label{
+    display:block;
+    margin-bottom:7px;
+    font-size:11px;
+    font-weight:800;
+}
+
+.form-group input,
+.form-group select{
+    width:100%;
+    padding:11px;
+    border:1px solid var(--border);
+    border-radius:8px;
+    outline:none;
+    font-family:inherit;
+}
+
+/* =====================================================
+   EMPTY
+===================================================== */
+
+.empty{
+    text-align:center;
+    padding:45px 20px;
+    color:var(--muted);
+}
+
+.empty-icon{
+    font-size:40px;
+    margin-bottom:10px;
+}
+
+/* =====================================================
+   TOAST
+===================================================== */
+
+.toast{
+    position:fixed;
+    right:25px;
+    bottom:25px;
+    background:#101412;
+    color:white;
+    padding:13px 17px;
+    border-radius:10px;
+    box-shadow:0 10px 30px rgba(0,0,0,.2);
+    transform:translateY(100px);
+    opacity:0;
+    transition:.3s;
+    z-index:1000;
+    font-size:12px;
+    font-weight:700;
+}
+
+.toast.show{
+    transform:translateY(0);
+    opacity:1;
+}
+
+/* =====================================================
+   MOBILE
+===================================================== */
+
+@media(max-width:1100px){
+
+    .stats{
+        grid-template-columns:repeat(2,1fr);
+    }
+
+    .dashboard-grid{
+        grid-template-columns:1fr;
+    }
+
+    .product-grid{
+        grid-template-columns:repeat(3,1fr);
+    }
+
+    .customer-grid{
+        grid-template-columns:repeat(2,1fr);
+    }
+
+}
+
+@media(max-width:800px){
+
+    .sidebar{
+        transform:translateX(-100%);
+        transition:.25s;
+    }
+
+    .sidebar.open{
+        transform:translateX(0);
+    }
+
+    .main{
+        margin-left:0;
+    }
+
+    .mobile-menu{
+        display:block;
+    }
+
+    .topbar{
+        padding:0 15px;
+    }
+
+    .search{
+        display:none;
+    }
+
+    .admin-user > div{
+        display:none;
+    }
+
+    .content{
+        padding:20px 15px;
+    }
+
+    .product-grid{
+        grid-template-columns:repeat(2,1fr);
+    }
+
+    .settings-grid{
+        grid-template-columns:1fr;
+    }
+
+}
+
+@media(max-width:550px){
+
+    .stats{
+        grid-template-columns:1fr 1fr;
+        gap:10px;
+    }
+
+    .stat{
+        padding:15px;
+    }
+
+    .stat h2{
+        font-size:21px;
+    }
+
+    .page-heading{
+        display:block;
+    }
+
+    .page-heading .primary-btn{
+        margin-top:15px;
+    }
+
+    .customer-grid,
+    .subscription-grid{
+        grid-template-columns:1fr;
+    }
+
+    .product-grid{
+        grid-template-columns:1fr 1fr;
+    }
+
+    .product-image{
+        height:115px;
+        font-size:50px;
+    }
+
+    .detail-grid{
+        grid-template-columns:1fr;
+    }
+
+    .detail.full{
+        grid-column:auto;
+    }
+
+}
+</style>
+</head>
+
+<body>
+
+<!-- =====================================================
+     ADMIN LOGIN
+===================================================== -->
+
+<section class="login-screen" id="adminLoginScreen">
+
+    <div class="login-box">
+
+        <div class="login-logo">
+            <span>D</span>
+            DREAMZZ
+        </div>
+
+        <h1>Admin Dashboard</h1>
+
+        <p>
+            Login to manage your DREAMZZ business.
+        </p>
+
+        <input
+            type="email"
+            id="adminLoginEmail"
+            placeholder="Admin email"
+        >
+
+        <input
+            type="password"
+            id="adminLoginPassword"
+            placeholder="Admin password"
+        >
+
+        <button onclick="adminLogin()">
+            🔐 Login to Dashboard
+        </button>
+
+        <p style="margin-top:18px;">
+            DREAMZZ Management System
+        </p>
+
+    </div>
+
+</section>
+
+
+<!-- =====================================================
+     APP
+===================================================== -->
+
+<div class="app" id="app">
+
+<!-- =====================================================
+     SIDEBAR
+===================================================== -->
+
+<aside class="sidebar" id="sidebar">
+
+    <div class="brand">
+
+        <div class="brand-mark">
+            D
+        </div>
+
+        <div class="brand-text">
+            DREAMZZ
+            <small>ADMIN PANEL</small>
+        </div>
+
+    </div>
+
+
+    <nav class="nav">
+
+        <div class="nav-title">
+            MAIN
+        </div>
+
+        <button
+            class="active"
+            onclick="showPage('dashboard',this)"
+        >
+            <span class="nav-icon">📊</span>
+            Dashboard
+        </button>
+
+
+        <button
+            onclick="showPage('orders',this)"
+        >
+            <span class="nav-icon">📦</span>
+            Orders
+            <span class="nav-badge" id="newOrderBadge">0</span>
+        </button>
+
+
+        <button
+            onclick="showPage('customers',this)"
+        >
+            <span class="nav-icon">👥</span>
+            Customers
+        </button>
+
+
+        <div class="nav-title" style="margin-top:20px;">
+            BUSINESS
+        </div>
+
+
+        <button
+            onclick="showPage('products',this)"
+        >
+            <span class="nav-icon">🛍️</span>
+            Products
+        </button>
+
+
+        <button
+            onclick="showPage('subscriptions',this)"
+        >
+            <span class="nav-icon">🥛</span>
+            Milk Subscriptions
+        </button>
+
+
+        <button
+            onclick="showPage('analytics',this)"
+        >
+            <span class="nav-icon">📈</span>
+            Analytics
+        </button>
+
+
+        <button
+            onclick="showPage('alerts',this)"
+        >
+            <span class="nav-icon">🔔</span>
+            Alerts
+        </button>
+
+
+        <div class="nav-title" style="margin-top:20px;">
+            SYSTEM
+        </div>
+
+
+        <button
+            onclick="showPage('settings',this)"
+        >
+            <span class="nav-icon">⚙️</span>
+            Settings
+        </button>
+
+    </nav>
+
+
+    <div class="sidebar-bottom">
+
+        <button
+            class="logout"
+            onclick="adminLogout()"
+        >
+            🚪 Logout
+        </button>
+
+    </div>
+
+</aside>
+
+
+<!-- =====================================================
+     MAIN
+===================================================== -->
+
+<main class="main">
+
+<!-- TOPBAR -->
+
+<header class="topbar">
+
+    <button
+        class="mobile-menu"
+        onclick="toggleSidebar()"
+    >
+        ☰
+    </button>
+
+
+    <div class="search">
+
+        <span class="search-icon">
+            🔍
+        </span>
+
+        <input
+            type="text"
+            id="globalSearch"
+            placeholder="Search orders, customers..."
+            oninput="globalSearch()"
+        >
+
+    </div>
+
+
+    <div class="top-actions">
+
+        <button
+            class="notification"
+            onclick="showPageByName('alerts')"
+        >
+            🔔
+            <span
+                class="notification-dot"
+                id="notificationDot"
+            ></span>
+        </button>
+
+
+        <div class="admin-user">
+
+            <div class="avatar">
+                A
+            </div>
+
+            <div>
+
+                <strong>DREAMZZ Admin</strong>
+
+                <span>
+                    Administrator
+                </span>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</header>
+
+
+<!-- =====================================================
+     CONTENT
+===================================================== -->
+
+<div class="content">
+
+
+<!-- =====================================================
+     DASHBOARD
+===================================================== -->
+
+<section
+    class="page active"
+    id="page-dashboard"
+>
+
+    <div class="page-heading">
+
+        <div>
+
+            <h1>Dashboard</h1>
+
+            <p id="dashboardDate">
+                DREAMZZ business overview
+            </p>
+
+        </div>
+
+        <button
+            class="primary-btn"
+            onclick="loadOrders()"
+        >
+            ↻ Refresh
+        </button>
+
+    </div>
+
+
+    <div class="stats">
+
+        <div class="stat">
+
+            <div class="stat-top">
+
+                <div class="stat-icon">
+                    💰
+                </div>
+
+                <span class="stat-change">
+                    LIVE
+                </span>
+
+            </div>
+
+            <h2 id="statSales">
+                ₹0
+            </h2>
+
+            <p>Total Sales</p>
+
+        </div>
+
+
+        <div class="stat">
+
+            <div class="stat-top">
+
+                <div class="stat-icon">
+                    📦
+                </div>
+
+                <span class="stat-change">
+                    ORDERS
+                </span>
+
+            </div>
+
+            <h2 id="statOrders">
+                0
+            </h2>
+
+            <p>Total Orders</p>
+
+        </div>
+
+
+        <div class="stat">
+
+            <div class="stat-top">
+
+                <div class="stat-icon">
+                    👥
+                </div>
+
+                <span class="stat-change">
+                    USERS
+                </span>
+
+            </div>
+
+            <h2 id="statCustomers">
+                0
+            </h2>
+
+            <p>Customers</p>
+
+        </div>
+
+
+        <div class="stat">
+
+            <div class="stat-top">
+
+                <div class="stat-icon">
+                    🚚
+                </div>
+
+                <span class="stat-change">
+                    ACTION
+                </span>
+
+            </div>
+
+            <h2 id="statPending">
+                0
+            </h2>
+
+            <p>Pending Orders</p>
+
+        </div>
+
+    </div>
+
+
+    <div class="dashboard-grid">
+
+        <div>
+
+            <div class="card">
+
+                <div class="card-title">
+
+                    <h2>
+                        Sales Overview
+                    </h2>
+
+                    <span>
+                        Last 7 Days
+                    </span>
+
+                </div>
+
+                <div
+                    class="chart"
+                    id="salesChart"
+                ></div>
+
+            </div>
+
+
+            <div class="card">
+
+                <div class="card-title">
+
+                    <h2>
+                        Recent Orders
+                    </h2>
+
+                    <a onclick="showPageByName('orders')">
+                        View all
+                    </a>
+
+                </div>
+
+                <div
+                    class="table-wrap"
+                    id="recentOrders"
+                ></div>
+
+            </div>
+
+        </div>
+
+
+        <div>
+
+            <div class="card">
+
+                <div class="card-title">
+
+                    <h2>
+                        Order Status
+                    </h2>
+
+                </div>
+
+                <div id="statusSummary"></div>
+
+            </div>
+
+
+            <div class="card">
+
+                <div class="card-title">
+
+                    <h2>
+                        Quick Alerts
+                    </h2>
+
+                </div>
+
+                <div
+                    class="alert-list"
+                    id="quickAlerts"
+                ></div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</section>
+
+
+<!-- =====================================================
+     ORDERS
+===================================================== -->
+
+<section
+    class="page"
+    id="page-orders"
+>
+
+    <div class="page-heading">
+
+        <div>
+
+            <h1>Orders</h1>
+
+            <p>
+                Manage every DREAMZZ customer order.
+            </p>
+
+        </div>
+
+    </div>
+
+
+    <div class="filters">
+
+        <input
+            type="text"
+            id="orderSearch"
+            placeholder="Search order / customer / phone"
+            oninput="renderOrders()"
+        >
+
+
+        <select
+            id="orderStatusFilter"
+            onchange="renderOrders()"
+        >
+
+            <option value="ALL">
+                All Status
+            </option>
+
+            <option value="New">
+                New
+            </option>
+
+            <option value="Accepted">
+                Accepted
+            </option>
+
+            <option value="Processing">
+                Processing
+            </option>
+
+            <option value="Out for Delivery">
+                Out for Delivery
+            </option>
+
+            <option value="Delivered">
+                Delivered
+            </option>
+
+            <option value="Cancelled">
+                Cancelled
+            </option>
+
+        </select>
+
+
+        <select
+            id="paymentFilter"
+            onchange="renderOrders()"
+        >
+
+            <option value="ALL">
+                All Payments
+            </option>
+
+            <option value="COD">
+                COD
+            </option>
+
+            <option value="ONLINE">
+                Online
+            </option>
+
+        </select>
+
+    </div>
+
+
+    <div class="card">
+
+        <div
+            class="table-wrap"
+            id="ordersTable"
+        ></div>
+
+    </div>
+
+</section>
+
+
+<!-- =====================================================
+     CUSTOMERS
+===================================================== -->
+
+<section
+    class="page"
+    id="page-customers"
+>
+
+    <div class="page-heading">
+
+        <div>
+
+            <h1>Customers</h1>
+
+            <p>
+                Customer information from your orders.
+            </p>
+
+        </div>
+
+    </div>
+
+
+    <div class="filters">
+
+        <input
+            type="text"
+            id="customerSearch"
+            placeholder="Search customers..."
+            oninput="renderCustomers()"
+        >
+
+    </div>
+
+
+    <div
+        class="customer-grid"
+        id="customerGrid"
+    ></div>
+
+</section>
+
+
+<!-- =====================================================
+     PRODUCTS
+===================================================== -->
+
+<section
+    class="page"
+    id="page-products"
+>
+
+    <div class="page-heading">
+
+        <div>
+
+            <h1>Products</h1>
+
+            <p>
+                Manage your DREAMZZ marketplace products.
+            </p>
+
+        </div>
+
+        <button
+            class="primary-btn"
+            onclick="openProductModal()"
+        >
+            + Add Product
+        </button>
+
+    </div>
+
+
+    <div
+        class="product-grid"
+        id="productGrid"
+    ></div>
+
+</section>
+
+
+<!-- =====================================================
+     SUBSCRIPTIONS
+===================================================== -->
+
+<section
+    class="page"
+    id="page-subscriptions"
+>
+
+    <div class="page-heading">
+
+        <div>
+
+            <h1>Milk Subscriptions</h1>
+
+            <p>
+                Manage recurring milk customers.
+            </p>
+
+        </div>
+
+        <button
+            class="primary-btn"
+            onclick="addDemoSubscription()"
+        >
+            + Add Subscription
+        </button>
+
+    </div>
+
+
+    <div class="stats">
+
+        <div class="stat">
+
+            <div class="stat-icon">
+                🥛
+            </div>
+
+            <h2 id="subActive">
+                0
+            </h2>
+
+            <p>Active Subscriptions</p>
+
+        </div>
+
+
+        <div class="stat">
+
+            <div class="stat-icon">
+                📦
+            </div>
+
+            <h2 id="subLitres">
+                0 L
+            </h2>
+
+            <p>Daily Milk</p>
+
+        </div>
+
+
+        <div class="stat">
+
+            <div class="stat-icon">
+                💰
+            </div>
+
+            <h2 id="subRevenue">
+                ₹0
+            </h2>
+
+            <p>Monthly Revenue</p>
+
+        </div>
+
+    </div>
+
+
+    <div
+        class="subscription-grid"
+        id="subscriptionGrid"
+    ></div>
+
+</section>
+
+
+<!-- =====================================================
+     ANALYTICS
+===================================================== -->
+
+<section
+    class="page"
+    id="page-analytics"
+>
+
+    <div class="page-heading">
+
+        <div>
+
+            <h1>Analytics</h1>
+
+            <p>
+                Business performance overview.
+            </p>
+
+        </div>
+
+    </div>
+
+
+    <div class="stats">
+
+        <div class="stat">
+
+            <div class="stat-icon">
+                💰
+            </div>
+
+            <h2 id="analyticsRevenue">
+                ₹0
+            </h2>
+
+            <p>Revenue</p>
+
+        </div>
+
+
+        <div class="stat">
+
+            <div class="stat-icon">
+                🛒
+            </div>
+
+            <h2 id="analyticsAverage">
+                ₹0
+            </h2>
+
+            <p>Average Order Value</p>
+
+        </div>
+
+
+        <div class="stat">
+
+            <div class="stat-icon">
+                📦
+            </div>
+
+            <h2 id="analyticsDelivered">
+                0
+            </h2>
+
+            <p>Delivered</p>
+
+        </div>
+
+
+        <div class="stat">
+
+            <div class="stat-icon">
+                ❌
+            </div>
+
+            <h2 id="analyticsCancelled">
+                0
+            </h2>
+
+            <p>Cancelled</p>
+
+        </div>
+
+    </div>
+
+
+    <div class="card">
+
+        <div class="card-title">
+
+            <h2>
+                7-Day Sales
+            </h2>
+
+        </div>
+
+        <div
+            class="chart"
+            id="analyticsChart"
+        ></div>
+
+    </div>
+
+
+    <div class="card">
+
+        <div class="card-title">
+
+            <h2>
+                Top Products
+            </h2>
+
+        </div>
+
+        <div
+            class="table-wrap"
+            id="topProducts"
+        ></div>
+
+    </div>
+
+</section>
+
+
+<!-- =====================================================
+     ALERTS
+===================================================== -->
+
+<section
+    class="page"
+    id="page-alerts"
+>
+
+    <div class="page-heading">
+
+        <div>
+
+            <h1>Alerts</h1>
+
+            <p>
+                Important business notifications.
+            </p>
+
+        </div>
+
+    </div>
+
+
+    <div class="card">
+
+        <div
+            class="alert-list"
+            id="alertList"
+        ></div>
+
+    </div>
+
+</section>
+
+
+<!-- =====================================================
+     SETTINGS
+===================================================== -->
+
+<section
+    class="page"
+    id="page-settings"
+>
+
+    <div class="page-heading">
+
+        <div>
+
+            <h1>Settings</h1>
+
+            <p>
+                DREAMZZ administration settings.
+            </p>
+
+        </div>
+
+    </div>
+
+
+    <div class="settings-grid">
+
+        <div class="card">
+
+            <div class="card-title">
+                <h2>Business Details</h2>
+            </div>
+
+
+            <div class="form-group">
+
+                <label>
+                    Business Name
+                </label>
+
+                <input
+                    id="settingBusiness"
+                    value="DREAMZZ"
+                >
+
+            </div>
+
+
+            <div class="form-group">
+
+                <label>
+                    Phone
+                </label>
+
+                <input
+                    id="settingPhone"
+                    placeholder="Business phone"
+                >
+
+            </div>
+
+
+            <div class="form-group">
+
+                <label>
+                    Email
+                </label>
+
+                <input
+                    id="settingEmail"
+                    placeholder="Business email"
+                >
+
+            </div>
+
+
+            <button
+                class="primary-btn"
+                onclick="saveSettings()"
+            >
+                Save Settings
+            </button>
+
+        </div>
+
+
+        <div class="card">
+
+            <div class="card-title">
+                <h2>Admin Information</h2>
+            </div>
+
+
+            <div class="detail">
+
+                <label>
+                    ROLE
+                </label>
+
+                <strong>
+                    Administrator
+                </strong>
+
+            </div>
+
+            <br>
+
+            <div class="detail">
+
+                <label>
+                    DATABASE
+                </label>
+
+                <strong>
+                    Firebase Firestore
+                </strong>
+
+            </div>
+
+            <br>
+
+            <div class="detail">
+
+                <label>
+                    WEBSITE
+                </label>
+
+                <strong>
+                    DREAMZZ Farm
+                </strong>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</section>
+
+</div>
+
+</main>
+
+</div>
+
+
+<!-- =====================================================
+     ORDER MODAL
+===================================================== -->
+
+<div
+    class="modal-overlay"
+    id="orderModal"
+>
+
+    <div class="modal">
+
+        <div class="modal-head">
+
+            <h2>
+                Order Details
+            </h2>
+
+            <button
+                class="close"
+                onclick="closeModal('orderModal')"
+            >
+                ×
+            </button>
+
+        </div>
+
+        <div id="orderDetails"></div>
+
+    </div>
+
+</div>
+
+
+<!-- =====================================================
+     PRODUCT MODAL
+===================================================== -->
+
+<div
+    class="modal-overlay"
+    id="productModal"
+>
+
+    <div class="modal">
+
+        <div class="modal-head">
+
+            <h2>
+                Product
+            </h2>
+
+            <button
+                class="close"
+                onclick="closeModal('productModal')"
+            >
+                ×
+            </button>
+
+        </div>
+
+
+        <div class="form-group">
+
+            <label>
+                Product Name
+            </label>
+
+            <input
+                id="productName"
+                placeholder="Product name"
+            >
+
+        </div>
+
+
+        <div class="form-group">
+
+            <label>
+                Price
+            </label>
+
+            <input
+                type="number"
+                id="productPrice"
+                placeholder="Price"
+            >
+
+        </div>
+
+
+        <div class="form-group">
+
+            <label>
+                Category
+            </label>
+
+            <select id="productCategory">
+
+                <option>Dairy</option>
+                <option>Fish</option>
+                <option>Food</option>
+                <option>Fresh</option>
+
+            </select>
+
+        </div>
+
+
+        <div class="form-group">
+
+            <label>
+                Stock
+            </label>
+
+            <input
+                type="number"
+                id="productStock"
+                placeholder="Stock quantity"
+            >
+
+        </div>
+
+
+        <div class="form-group">
+
+            <label>
+                Emoji
+            </label>
+
+            <input
+                id="productEmoji"
+                placeholder="🥛"
+            >
+
+        </div>
+
+
+        <button
+            class="primary-btn"
+            onclick="saveProduct()"
+        >
+            Save Product
+        </button>
+
+    </div>
+
+</div>
+
+
+<!-- =====================================================
+     TOAST
+===================================================== -->
+
+<div
+    class="toast"
+    id="toast"
+></div>
+
+
+<!-- =====================================================
+     FIREBASE
+===================================================== -->
+
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
+
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
+
+<script src="firebase-config.js"></script>
+
+
+<script>
+
+/* =====================================================
+   DREAMZZ ADMIN
+===================================================== */
+
+
+/* ================= ADMIN CREDENTIALS ================= */
+/*
+   These are the same demo credentials used by login.html.
+
+   Email:
+   admin@dreamzz.com
+
+   Password:
+   DREAMZZ@123
+
+   IMPORTANT:
+   This is only client-side demo authentication.
+   Firebase Authentication should be used for production.
+*/
+
+
+const ADMIN_EMAIL =
+    "admin@dreamzz.com";
+
+const ADMIN_PASSWORD =
+    "DREAMZZ@123";
+
+
+/* ================= GLOBAL DATA ================= */
+
+let orders = [];
+
+let products = [
+
+    {
+        id:1,
+        name:"Fresh Cow Milk",
+        price:65,
+        category:"Dairy",
+        stock:100,
+        emoji:"🥛"
+    },
+
+    {
+        id:2,
+        name:"Farm Fresh Curd",
+        price:55,
+        category:"Dairy",
+        stock:70,
+        emoji:"🥣"
+    },
+
+    {
+        id:3,
+        name:"Pure Farm Butter",
+        price:120,
+        category:"Dairy",
+        stock:40,
+        emoji:"🧈"
+    },
+
+    {
+        id:4,
+        name:"Fresh Tilapia Fish",
+        price:280,
+        category:"Fish",
+        stock:30,
+        emoji:"🐟"
+    },
+
+    {
+        id:5,
+        name:"Farm Rohu Fish",
+        price:320,
+        category:"Fish",
+        stock:25,
+        emoji:"🐠"
+    },
+
+    {
+        id:6,
+        name:"Fresh Prawns",
+        price:450,
+        category:"Fish",
+        stock:20,
+        emoji:"🦐"
+    },
+
+    {
+        id:7,
+        name:"Organic Honey",
+        price:250,
+        category:"Food",
+        stock:35,
+        emoji:"🍯"
+    },
+
+    {
+        id:8,
+        name:"Farm Fresh Eggs",
+        price:90,
+        category:"Food",
+        stock:80,
+        emoji:"🥚"
+    },
+
+    {
+        id:9,
+        name:"Fresh Vegetables",
+        price:150,
+        category:"Fresh",
+        stock:60,
+        emoji:"🥬"
+    },
+
+    {
+        id:10,
+        name:"Homemade Paneer",
+        price:180,
+        category:"Dairy",
+        stock:35,
+        emoji:"🧀"
+    },
+
+    {
+        id:11,
+        name:"Farm Banana",
+        price:70,
+        category:"Fresh",
+        stock:55,
+        emoji:"🍌"
+    },
+
+    {
+        id:12,
+        name:"Natural Farm Food",
+        price:350,
+        category:"Food",
+        stock:20,
+        emoji:"🌾"
+    }
+
+];
+
+
+let subscriptions = JSON.parse(
+    localStorage.getItem(
+        "dreamzzSubscriptions"
+    ) || "[]"
+);
+
+
+/* =====================================================
+   ADMIN LOGIN
+===================================================== */
+
+function adminLogin(){
+
+    const email =
+        document.getElementById(
+            "adminLoginEmail"
+        ).value.trim().toLowerCase();
+
+    const password =
+        document.getElementById(
+            "adminLoginPassword"
+        ).value;
+
+
+    if(
+        email !== ADMIN_EMAIL ||
+        password !== ADMIN_PASSWORD
+    ){
+
+        alert(
+            "Invalid admin email or password."
+        );
+
+        return;
+
+    }
+
+
+    localStorage.setItem(
+        "dreamzzAdminLoggedIn",
+        "true"
+    );
+
+
+    showApp();
+
+}
+
+
+function checkAdmin(){
+
+    if(
+        localStorage.getItem(
+            "dreamzzAdminLoggedIn"
+        ) === "true"
+    ){
+
+        showApp();
+
+    }
+
+}
+
+
+function showApp(){
+
+    document.getElementById(
+        "adminLoginScreen"
+    ).style.display = "none";
+
+
+    document.getElementById(
+        "app"
+    ).classList.add("show");
+
+
+    updateDate();
+
+    loadProducts();
+
+    loadOrders();
+
+}
+
+
+function adminLogout(){
+
+    localStorage.removeItem(
+        "dreamzzAdminLoggedIn"
+    );
+
+    location.reload();
+
+}
+
+
+/* =====================================================
+   NAVIGATION
+===================================================== */
+
+function showPage(page, button){
+
+    document
+        .querySelectorAll(".page")
+        .forEach(p =>
+            p.classList.remove("active")
+        );
+
+
+    const target =
+        document.getElementById(
+            "page-" + page
+        );
+
+
+    if(target)
+        target.classList.add("active");
+
+
+    document
+        .querySelectorAll(".nav button")
+        .forEach(b =>
+            b.classList.remove("active")
+        );
+
+
+    if(button)
+        button.classList.add("active");
+
+
+    document
+        .getElementById("sidebar")
+        .classList.remove("open");
+
+
+    if(page === "products")
+        renderProducts();
+
+    if(page === "customers")
+        renderCustomers();
+
+    if(page === "subscriptions")
+        renderSubscriptions();
+
+    if(page === "analytics")
+        renderAnalytics();
+
+    if(page === "alerts")
+        renderAlerts();
+
+}
+
+
+function showPageByName(page){
+
+    const button =
+        [...document.querySelectorAll(".nav button")]
+        .find(b =>
+            b.getAttribute("onclick") &&
+            b.getAttribute("onclick")
+             .includes("'" + page + "'")
+        );
+
+
+    showPage(page,button);
+
+}
+
+
+function toggleSidebar(){
+
+    document
+        .getElementById("sidebar")
+        .classList.toggle("open");
+
+}
+
+
+/* =====================================================
+   DATE
+===================================================== */
+
+function updateDate(){
+
+    const now = new Date();
+
+    document.getElementById(
+        "dashboardDate"
+    ).textContent =
+        now.toLocaleDateString(
+            "en-IN",
+            {
+                weekday:"long",
+                year:"numeric",
+                month:"long",
+                day:"numeric"
+            }
+        );
+
+}
+
+
+/* =====================================================
+   LOAD ORDERS
+===================================================== */
+
+function loadOrders(){
+
+    if(typeof db === "undefined"){
+
+        showToast(
+            "Firebase database not found."
+        );
+
+        return;
+
+    }
+
+
+    db.collection("orders")
+        .orderBy(
+            "createdAt",
+            "desc"
+        )
+        .onSnapshot(
+
+            snapshot => {
+
+                orders = [];
+
+
+                snapshot.forEach(doc => {
+
+                    const data =
+                        doc.data();
+
+
+                    orders.push({
+
+                        firestoreId:
+                            doc.id,
+
+                        ...data
+
+                    });
+
+                });
+
+
+                updateDashboard();
+
+                renderOrders();
+
+                renderCustomers();
+
+                renderAnalytics();
+
+                renderAlerts();
+
+            },
+
+            error => {
+
+                console.error(
+                    error
+                );
+
+                showToast(
+                    "Could not load Firebase orders."
+                );
+
+            }
+
+        );
+
+}
+
+
+/* =====================================================
+   DASHBOARD
+===================================================== */
+
+function updateDashboard(){
+
+    const validOrders =
+        orders.filter(
+            o =>
+            String(o.orderStatus || "")
+                .toLowerCase()
+            !== "cancelled"
+        );
+
+
+    const sales =
+        validOrders.reduce(
+            (sum,o) =>
+                sum + Number(o.total || 0),
+            0
+        );
+
+
+    const customers =
+        new Set(
+            orders
+            .map(o =>
+                o.customer?.phone ||
+                o.customer?.email
+            )
+            .filter(Boolean)
+        ).size;
+
+
+    const pending =
+        orders.filter(o =>
+            [
+                "New",
+                "Accepted",
+                "Processing",
+                "Out for Delivery"
+            ].includes(
+                o.orderStatus
+            )
+        ).length;
+
+
+    document.getElementById(
+        "statSales"
+    ).textContent =
+        "₹" + money(sales);
+
+
+    document.getElementById(
+        "statOrders"
+    ).textContent =
+        orders.length;
+
+
+    document.getElementById(
+        "statCustomers"
+    ).textContent =
+        customers;
+
+
+    document.getElementById(
+        "statPending"
+    ).textContent =
+        pending;
+
+
+    document.getElementById(
+        "newOrderBadge"
+    ).textContent =
+        orders.filter(
+            o => o.orderStatus === "New"
+        ).length;
+
+
+    renderRecentOrders();
+
+    renderStatusSummary();
+
+    renderChart(
+        "salesChart",
+        7
+    );
+
+    renderQuickAlerts();
+
+}
+
+
+/* =====================================================
+   RECENT ORDERS
+===================================================== */
+
+function renderRecentOrders(){
+
+    const box =
+        document.getElementById(
+            "recentOrders"
+        );
+
+
+    const recent =
+        orders.slice(0,6);
+
+
+    if(!recent.length){
+
+        box.innerHTML = emptyHTML(
+            "📦",
+            "No orders yet"
+        );
+
+        return;
+
+    }
+
+
+    box.innerHTML = `
+
+        <table>
+
+            <thead>
+
+                <tr>
+
+                    <th>ORDER</th>
+                    <th>CUSTOMER</th>
+                    <th>TOTAL</th>
+                    <th>STATUS</th>
+                    <th></th>
+
+                </tr>
+
+            </thead>
+
+            <tbody>
+
+                ${recent.map(o => `
+
+                    <tr>
+
+                        <td>
+                            <span class="order-number">
+                                ${escapeHTML(
+                                    o.orderId || o.firestoreId
+                                )}
+                            </span>
+                        </td>
+
+                        <td>
+                            <span class="customer-name">
+                                ${escapeHTML(
+                                    o.customer?.name ||
+                                    (
+                                        (o.customer?.firstName || "") +
+                                        " " +
+                                        (o.customer?.lastName || "")
+                                    ).trim() ||
+                                    "Customer"
+                                )}
+                            </span>
+
+                            <div class="customer-phone">
+                                ${escapeHTML(
+                                    o.customer?.phone || ""
+                                )}
+                            </div>
+                        </td>
+
+                        <td>
+                            ₹${money(o.total || 0)}
+                        </td>
+
+                        <td>
+                            ${statusHTML(
+                                o.orderStatus
+                            )}
+                        </td>
+
+                        <td>
+                            <button
+                                class="action-btn"
+                                onclick="viewOrder('${o.firestoreId}')"
+                            >
+                                View
+                            </button>
+                        </td>
+
+                    </tr>
+
+                `).join("")}
+
+            </tbody>
+
+        </table>
+
+    `;
+
+}
+
+
+/* =====================================================
+   ORDERS TABLE
+===================================================== */
+
+function renderOrders(){
+
+    const box =
+        document.getElementById(
+            "ordersTable"
+        );
+
+
+    const search =
+        (
+            document.getElementById(
+                "orderSearch"
+            )?.value || ""
+        )
+        .toLowerCase();
+
+
+    const status =
+        document.getElementById(
+            "orderStatusFilter"
+        )?.value || "ALL";
+
+
+    const payment =
+        document.getElementById(
+            "paymentFilter"
+        )?.value || "ALL";
+
+
+    let filtered =
+        orders.filter(o => {
+
+            const customer =
+                o.customer || {};
+
+
+            const text = (
+
+                (o.orderId || "") +
+
+                " " +
+
+                (customer.name || "") +
+
+                " " +
+
+                (customer.phone || "") +
+
+                " " +
+
+                (customer.email || "")
+
+            ).toLowerCase();
+
+
+            const matchSearch =
+                !search ||
+                text.includes(search);
+
+
+            const matchStatus =
+                status === "ALL" ||
+                o.orderStatus === status;
+
+
+            const matchPayment =
+                payment === "ALL" ||
+                o.paymentMethod === payment;
+
+
+            return (
+                matchSearch &&
+                matchStatus &&
+                matchPayment
+            );
+
+        });
+
+
+    if(!filtered.length){
+
+        box.innerHTML = emptyHTML(
+            "📦",
+            "No matching orders"
+        );
+
+        return;
+
+    }
+
+
+    box.innerHTML = `
+
+        <table>
+
+            <thead>
+
+                <tr>
+
+                    <th>ORDER</th>
+                    <th>CUSTOMER</th>
+                    <th>ITEMS</th>
+                    <th>TOTAL</th>
+                    <th>PAYMENT</th>
+                    <th>STATUS</th>
+                    <th>ACTIONS</th>
+
+                </tr>
+
+            </thead>
+
+            <tbody>
+
+                ${filtered.map(o => `
+
+                    <tr>
+
+                        <td>
+                            <span class="order-number">
+                                ${escapeHTML(
+                                    o.orderId ||
+                                    o.firestoreId
+                                )}
+                            </span>
+                        </td>
+
+                        <td>
+
+                            <span class="customer-name">
+                                ${escapeHTML(
+                                    o.customer?.name ||
+                                    "Customer"
+                                )}
+                            </span>
+
+                            <div class="customer-phone">
+                                ${escapeHTML(
+                                    o.customer?.phone ||
+                                    ""
+                                )}
+                            </div>
+
+                        </td>
+
+                        <td>
+                            ${(o.items || []).length}
+                        </td>
+
+                        <td>
+                            <strong>
+                                ₹${money(o.total || 0)}
+                            </strong>
+                        </td>
+
+                        <td>
+                            ${escapeHTML(
+                                o.paymentMethod ||
+                                "COD"
+                            )}
+                        </td>
+
+                        <td>
+                            ${statusHTML(
+                                o.orderStatus
+                            )}
+                        </td>
+
+                        <td>
+
+                            <button
+                                class="action-btn"
+                                onclick="viewOrder('${o.firestoreId}')"
+                            >
+                                View
+                            </button>
+
+                            <button
+                                class="action-btn"
+                                onclick="nextOrderStatus('${o.firestoreId}')"
+                            >
+                                Next →
+                            </button>
+
+                        </td>
+
+                    </tr>
+
+                `).join("")}
+
+            </tbody>
+
+        </table>
+
+    `;
+
+}
+
+
+/* =====================================================
+   VIEW ORDER
+===================================================== */
+
+function viewOrder(id){
+
+    const order =
+        orders.find(
+            o =>
+            o.firestoreId === id
+        );
+
+
+    if(!order)
+        return;
+
+
+    const customer =
+        order.customer || {};
+
+
+    const items =
+        order.items || [];
+
+
+    document.getElementById(
+        "orderDetails"
+    ).innerHTML = `
+
+        <div class="detail-grid">
+
+            <div class="detail">
+
+                <label>ORDER ID</label>
+
+                <strong>
+                    ${escapeHTML(
+                        order.orderId ||
+                        order.firestoreId
+                    )}
+                </strong>
+
+            </div>
+
+
+            <div class="detail">
+
+                <label>STATUS</label>
+
+                ${statusHTML(
+                    order.orderStatus
+                )}
+
+            </div>
+
+
+            <div class="detail">
+
+                <label>CUSTOMER</label>
+
+                <strong>
+                    ${escapeHTML(
+                        customer.name ||
+                        (
+                            (customer.firstName || "") +
+                            " " +
+                            (customer.lastName || "")
+                        ).trim()
+                    )}
+                </strong>
+
+            </div>
+
+
+            <div class="detail">
+
+                <label>PHONE</label>
+
+                <strong>
+                    ${escapeHTML(
+                        customer.phone || "-"
+                    )}
+                </strong>
+
+            </div>
+
+
+            <div class="detail">
+
+                <label>EMAIL</label>
+
+                <strong>
+                    ${escapeHTML(
+                        customer.email || "-"
+                    )}
+                </strong>
+
+            </div>
+
+
+            <div class="detail">
+
+                <label>PAYMENT</label>
+
+                <strong>
+                    ${escapeHTML(
+                        order.paymentMethod ||
+                        "-"
+                    )}
+                </strong>
+
+            </div>
+
+
+            <div class="detail full">
+
+                <label>DELIVERY ADDRESS</label>
+
+                <strong>
+                    ${escapeHTML(
+                        [
+                            customer.address,
+                            customer.city,
+                            customer.pincode,
+                            customer.state,
+                            customer.country
+                        ]
+                        .filter(Boolean)
+                        .join(", ")
+                    )}
+                </strong>
+
+            </div>
+
+        </div>
+
+
+        <div class="item-list">
+
+            <strong>
+                Ordered Products
+            </strong>
+
+            ${items.map(item => `
+
+                <div class="item-row">
+
+                    <div class="item-emoji">
+                        ${item.emoji || "📦"}
+                    </div>
+
+                    <div>
+
+                        <strong>
+                            ${escapeHTML(
+                                item.name ||
+                                "Product"
+                            )}
+                        </strong>
+
+                        <small>
+                            ₹${money(item.price || 0)}
+                            ×
+                            ${item.quantity || item.qty || 1}
+                        </small>
+
+                    </div>
+
+                    <strong>
+                        ₹${money(
+                            item.total ||
+                            (
+                                Number(item.price || 0) *
+                                Number(
+                                    item.quantity ||
+                                    item.qty ||
+                                    1
+                                )
+                            )
+                        )}
+                    </strong>
+
+                </div>
+
+            `).join("")}
+
+        </div>
+
+
+        <div class="detail-grid" style="margin-top:18px;">
+
+            <div class="detail">
+
+                <label>SUBTOTAL</label>
+
+                <strong>
+                    ₹${money(
+                        order.subtotal ||
+                        0
+                    )}
+                </strong>
+
+            </div>
+
+
+            <div class="detail">
+
+                <label>DELIVERY</label>
+
+                <strong>
+                    ₹${money(
+                        order.delivery?.fee ||
+                        0
+                    )}
+                </strong>
+
+            </div>
+
+
+            <div class="detail full">
+
+                <label>TOTAL</label>
+
+                <strong style="
+                    font-size:20px;
+                    color:var(--green);
+                ">
+                    ₹${money(
+                        order.total ||
+                        0
+                    )}
+                </strong>
+
+            </div>
+
+        </div>
+
+
+        <div class="modal-actions">
+
+            <button
+                class="primary-btn"
+                onclick="updateOrderStatus('${id}','Accepted')"
+            >
+                ✓ Accept
+            </button>
+
+            <button
+                class="secondary-btn"
+                onclick="updateOrderStatus('${id}','Processing')"
+            >
+                Processing
+            </button>
+
+            <button
+                class="secondary-btn"
+                onclick="updateOrderStatus('${id}','Out for Delivery')"
+            >
+                🚚 Out for Delivery
+            </button>
+
+            <button
+                class="secondary-btn"
+                onclick="updateOrderStatus('${id}','Delivered')"
+            >
+                ✓ Delivered
+            </button>
+
+            <button
+                class="secondary-btn"
+                onclick="updateOrderStatus('${id}','Cancelled')"
+            >
+                ❌ Cancel
+            </button>
+
+        </div>
+
+    `;
+
+
+    document
+        .getElementById("orderModal")
+        .classList.add("show");
+
+}
+
+
+/* =====================================================
+   UPDATE ORDER STATUS
+===================================================== */
+
+async function updateOrderStatus(
+    id,
+    status
+){
+
+    if(typeof db === "undefined")
+        return;
+
+
+    try{
+
+        await db
+            .collection("orders")
+            .doc(id)
+            .update({
+
+                orderStatus: status,
+
+                updatedAt:
+                    firebase.firestore
+                    .FieldValue
+                    .serverTimestamp()
+
+            });
+
+
+        showToast(
+            "Order updated: " + status
+        );
+
+
+        closeModal(
+            "orderModal"
+        );
+
+
+    }catch(error){
+
+        console.error(error);
+
+        showToast(
+            "Could not update order."
+        );
+
+    }
+
+}
+
+
+/* =====================================================
+   NEXT STATUS
+===================================================== */
+
+function nextOrderStatus(id){
+
+    const order =
+        orders.find(
+            o =>
+            o.firestoreId === id
+        );
+
+
+    if(!order)
+        return;
+
+
+    const flow = [
+
+        "New",
+
+        "Accepted",
+
+        "Processing",
+
+        "Out for Delivery",
+
+        "Delivered"
+
+    ];
+
+
+    const current =
+        flow.indexOf(
+            order.orderStatus
+        );
+
+
+    const next =
+        flow[current + 1];
+
+
+    if(next){
+
+        updateOrderStatus(
+            id,
+            next
+        );
+
+    }
+
+}
+
+
+/* =====================================================
+   STATUS SUMMARY
+===================================================== */
+
+function renderStatusSummary(){
+
+    const statuses = [
+
+        ["New","🆕"],
+        ["Accepted","✓"],
+        ["Processing","⚙️"],
+        ["Out for Delivery","🚚"],
+        ["Delivered","✅"],
+        ["Cancelled","❌"]
+
+    ];
+
+
+    const box =
+        document.getElementById(
+            "statusSummary"
+        );
+
+
+    box.innerHTML =
+        statuses.map(
+            ([status,icon]) => {
+
+                const count =
+                    orders.filter(
+                        o =>
+                        o.orderStatus === status
+                    ).length;
+
+
+                return `
+
+                    <div style="
+                        display:flex;
+                        align-items:center;
+                        justify-content:space-between;
+                        padding:10px 0;
+                        border-bottom:1px solid #eef1ef;
+                    ">
+
+                        <span style="
+                            font-size:12px;
+                            font-weight:700;
+                        ">
+                            ${icon} ${status}
+                        </span>
+
+                        <strong>
+                            ${count}
+                        </strong>
+
+                    </div>
+
+                `;
+
+            }
+        ).join("");
+
+}
+
+
+/* =====================================================
+   CUSTOMERS
+===================================================== */
+
+function renderCustomers(){
+
+    const box =
+        document.getElementById(
+            "customerGrid"
+        );
+
+
+    const search =
+        (
+            document.getElementById(
+                "customerSearch"
+            )?.value || ""
+        )
+        .toLowerCase();
+
+
+    const map = new Map();
+
+
+    orders.forEach(order => {
+
+        const c =
+            order.customer || {};
+
+
+        const key =
+            c.phone ||
+            c.email ||
+            c.name;
+
+
+        if(!key)
+            return;
+
+
+        if(!map.has(key)){
+
+            map.set(
+                key,
+                {
+                    ...c,
+                    orders:0,
+                    spent:0
+                }
+            );
+
+        }
+
+
+        const customer =
+            map.get(key);
+
+
+        customer.orders++;
+
+        customer.spent +=
+            Number(order.total || 0);
+
+    });
+
+
+    let customers =
+        [...map.values()];
+
+
+    customers =
+        customers.filter(c => {
+
+            const text = (
+
+                c.name || "" +
+                " " +
+                c.phone || "" +
+                " " +
+                c.email || ""
+
+            ).toLowerCase();
+
+
+            return !search ||
+                text.includes(search);
+
+        });
+
+
+    if(!customers.length){
+
+        box.innerHTML =
+            emptyHTML(
+                "👥",
+                "No customers found"
+            );
+
+        return;
+
+    }
+
+
+    box.innerHTML =
+        customers.map(c => {
+
+            const initial =
+                (c.name || "C")
+                .charAt(0)
+                .toUpperCase();
+
+
+            return `
+
+                <div class="customer-card">
+
+                    <div class="customer-avatar">
+                        ${initial}
+                    </div>
+
+                    <h3>
+                        ${escapeHTML(
+                            c.name ||
+                            "Customer"
+                        )}
+                    </h3>
+
+                    <p>
+                        📱 ${escapeHTML(
+                            c.phone || "-"
+                        )}
+                    </p>
+
+                    <p>
+                        ✉️ ${escapeHTML(
+                            c.email || "-"
+                        )}
+                    </p>
+
+                    <div style="
+                        display:flex;
+                        justify-content:space-between;
+                        margin-top:14px;
+                        padding-top:12px;
+                        border-top:1px solid var(--border);
+                    ">
+
+                        <span style="
+                            font-size:10px;
+                            color:var(--muted);
+                        ">
+                            ${c.orders} orders
+                        </span>
+
+                        <strong style="
+                            font-size:12px;
+                            color:var(--green);
+                        ">
+                            ₹${money(c.spent)}
+                        </strong>
+
+                    </div>
+
+                </div>
+
+            `;
+
+        }).join("");
+
+}
+
+
+/* =====================================================
+   PRODUCTS
+===================================================== */
+
+function loadProducts(){
+
+    const saved =
+        JSON.parse(
+            localStorage.getItem(
+                "dreamzzAdminProducts"
+            ) || "null"
+        );
+
+
+    if(saved)
+        products = saved;
+
+
+    renderProducts();
+
+}
+
+
+function saveProducts(){
+
+    localStorage.setItem(
+        "dreamzzAdminProducts",
+        JSON.stringify(products)
+    );
+
+}
+
+
+function renderProducts(){
+
+    const box =
+        document.getElementById(
+            "productGrid"
+        );
+
+
+    box.innerHTML =
+        products.map(p => {
+
+            const percentage =
+                Math.min(
+                    100,
+                    Math.max(
+                        5,
+                        Number(p.stock || 0)
+                    )
+                );
+
+
+            return `
+
+                <div class="product-card">
+
+                    <div class="product-image">
+                        ${p.emoji || "📦"}
+                    </div>
+
+                    <div class="product-body">
+
+                        <h3>
+                            ${escapeHTML(
+                                p.name
+                            )}
+                        </h3>
+
+                        <div class="product-meta">
+
+                            <span>
+                                ₹${money(p.price)}
+                            </span>
+
+                            <span>
+                                ${escapeHTML(
+                                    p.category
+                                )}
+                            </span>
+
+                        </div>
+
+                        <div class="stock">
+
+                            <span style="
+                                width:${percentage}%;
+                            "></span>
+
+                        </div>
+
+                        <div style="
+                            margin-top:5px;
+                            font-size:10px;
+                            color:var(--muted);
+                        ">
+                            Stock: ${p.stock}
+                        </div>
+
+                        <div class="product-actions">
+
+                            <button
+                                onclick="editProduct(${p.id})"
+                            >
+                                ✏️ Edit
+                            </button>
+
+                            <button
+                                onclick="deleteProduct(${p.id})"
+                            >
+                                🗑️ Delete
+                            </button>
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+            `;
+
+        }).join("");
+
+}
+
+
+/* =====================================================
+   PRODUCT MODAL
+===================================================== */
+
+let editingProductId = null;
+
+
+function openProductModal(){
+
+    editingProductId = null;
+
+
+    document.getElementById(
+        "productName"
+    ).value = "";
+
+    document.getElementById(
+        "productPrice"
+    ).value = "";
+
+    document.getElementById(
+        "productCategory"
+    ).value = "Dairy";
+
+    document.getElementById(
+        "productStock"
+    ).value = "";
+
+    document.getElementById(
+        "productEmoji"
+    ).value = "📦";
+
+
+    document
+        .getElementById("productModal")
+        .classList.add("show");
+
+}
+
+
+function editProduct(id){
+
+    const p =
+        products.find(
+            x => x.id === id
+        );
+
+
+    if(!p)
+        return;
+
+
+    editingProductId = id;
+
+
+    document.getElementById(
+        "productName"
+    ).value = p.name;
+
+    document.getElementById(
+        "productPrice"
+    ).value = p.price;
+
+    document.getElementById(
+        "productCategory"
+    ).value = p.category;
+
+    document.getElementById(
+        "productStock"
+    ).value = p.stock;
+
+    document.getElementById(
+        "productEmoji"
+    ).value = p.emoji;
+
+
+    document
+        .getElementById("productModal")
+        .classList.add("show");
+
+}
+
+
+function saveProduct(){
+
+    const name =
+        document.getElementById(
+            "productName"
+        ).value.trim();
+
+
+    const price =
+        Number(
+            document.getElementById(
+                "productPrice"
+            ).value
+        );
+
+
+    const category =
+        document.getElementById(
+            "productCategory"
+        ).value;
+
+
+    const stock =
+        Number(
+            document.getElementById(
+                "productStock"
+            ).value
+        );
+
+
+    const emoji =
+        document.getElementById(
+            "productEmoji"
+        ).value.trim() ||
+        "📦";
+
+
+    if(!name || !price){
+
+        alert(
+            "Enter product name and price."
+        );
+
+        return;
+
+    }
+
+
+    if(editingProductId){
+
+        const p =
+            products.find(
+                x =>
+                x.id === editingProductId
+            );
+
+
+        if(p){
+
+            p.name = name;
+            p.price = price;
+            p.category = category;
+            p.stock = stock;
+            p.emoji = emoji;
+
+        }
+
+    }else{
+
+        products.push({
+
+            id:Date.now(),
+
+            name:name,
+
+            price:price,
+
+            category:category,
+
+            stock:stock,
+
+            emoji:emoji
+
+        });
+
+    }
+
+
+    saveProducts();
+
+    renderProducts();
+
+    closeModal(
+        "productModal"
+    );
+
+    showToast(
+        "Product saved."
+    );
+
+}
+
+
+function deleteProduct(id){
+
+    if(
+        !confirm(
+            "Delete this product?"
+        )
+    )
+        return;
+
+
+    products =
+        products.filter(
+            p => p.id !== id
+        );
+
+
+    saveProducts();
+
+    renderProducts();
+
+    showToast(
+        "Product deleted."
+    );
+
+}
+
+
+/* =====================================================
+   MILK SUBSCRIPTIONS
+===================================================== */
+
+function renderSubscriptions(){
+
+    const box =
+        document.getElementById(
+            "subscriptionGrid"
+        );
+
+
+    const active =
+        subscriptions.filter(
+            s =>
+            s.status === "ACTIVE"
+        );
+
+
+    let litres = 0;
+
+    active.forEach(s => {
+
+        litres +=
+            Number(
+                String(
+                    s.quantity || "0"
+                ).replace(
+                    /[^0-9.]/g,
+                    ""
+                )
+            );
+
+    });
+
+
+    const revenue =
+        active.length * 1950;
+
+
+    document.getElementById(
+        "subActive"
+    ).textContent =
+        active.length;
+
+
+    document.getElementById(
+        "subLitres"
+    ).textContent =
+        litres + " L";
+
+
+    document.getElementById(
+        "subRevenue"
+    ).textContent =
+        "₹" + money(revenue);
+
+
+    if(!active.length){
+
+        box.innerHTML =
+            emptyHTML(
+                "🥛",
+                "No active milk subscriptions"
+            );
+
+        return;
+
+    }
+
+
+    box.innerHTML =
+        active.map(s => `
+
+            <div class="subscription-card">
+
+                <div class="milk">
+                    🥛
+                </div>
+
+                <h3>
+                    ${escapeHTML(
+                        s.name ||
+                        "Milk Customer"
+                    )}
+                </h3>
+
+                <div class="subscription-info">
+
+                    <div>
+                        <span>Quantity</span>
+                        <strong>
+                            ${escapeHTML(
+                                s.quantity ||
+                                "1 L / Day"
+                            )}
+                        </strong>
+                    </div>
+
+                    <div>
+                        <span>Plan</span>
+                        <strong>
+                            ${escapeHTML(
+                                s.plan ||
+                                "Monthly"
+                            )}
+                        </strong>
+                    </div>
+
+                    <div>
+                        <span>Delivery</span>
+                        <strong>
+                            ${escapeHTML(
+                                s.delivery ||
+                                "Morning"
+                            )}
+                        </strong>
+                    </div>
+
+                    <div>
+                        <span>Status</span>
+                        <strong style="
+                            color:var(--green);
+                        ">
+                            ACTIVE
+                        </strong>
+                    </div>
+
+                </div>
+
+            </div>
+
+        `).join("");
+
+}
+
+
+function addDemoSubscription(){
+
+    const name =
+        prompt(
+            "Customer name:"
+        );
+
+
+    if(!name)
+        return;
+
+
+    subscriptions.push({
+
+        id:Date.now(),
+
+        name:name,
+
+        quantity:"1 L / Day",
+
+        plan:"Monthly Milk Plan",
+
+        delivery:"Morning",
+
+        status:"ACTIVE"
+
+    });
+
+
+    localStorage.setItem(
+        "dreamzzSubscriptions",
+        JSON.stringify(
+            subscriptions
+        )
+    );
+
+
+    renderSubscriptions();
+
+    showToast(
+        "Subscription added."
+    );
+
+}
+
+
+/* =====================================================
+   ANALYTICS
+===================================================== */
+
+function renderAnalytics(){
+
+    const valid =
+        orders.filter(
+            o =>
+            o.orderStatus !==
+            "Cancelled"
+        );
+
+
+    const revenue =
+        valid.reduce(
+            (sum,o) =>
+            sum + Number(o.total || 0),
+            0
+        );
+
+
+    const average =
+        valid.length
+        ? revenue / valid.length
+        : 0;
+
+
+    const delivered =
+        orders.filter(
+            o =>
+            o.orderStatus ===
+            "Delivered"
+        ).length;
+
+
+    const cancelled =
+        orders.filter(
+            o =>
+            o.orderStatus ===
+            "Cancelled"
+        ).length;
+
+
+    document.getElementById(
+        "analyticsRevenue"
+    ).textContent =
+        "₹" + money(revenue);
+
+
+    document.getElementById(
+        "analyticsAverage"
+    ).textContent =
+        "₹" + money(average);
+
+
+    document.getElementById(
+        "analyticsDelivered"
+    ).textContent =
+        delivered;
+
+
+    document.getElementById(
+        "analyticsCancelled"
+    ).textContent =
+        cancelled;
+
+
+    renderChart(
+        "analyticsChart",
+        7
+    );
+
+
+    renderTopProducts();
+
+}
+
+
+function renderTopProducts(){
+
+    const map = new Map();
+
+
+    orders.forEach(order => {
+
+        (order.items || [])
+        .forEach(item => {
+
+            const name =
+                item.name ||
+                "Product";
+
+
+            const quantity =
+                Number(
+                    item.quantity ||
+                    item.qty ||
+                    1
+                );
+
+
+            map.set(
+                name,
+                (
+                    map.get(name) || 0
+                ) + quantity
+            );
+
+        });
+
+    });
+
+
+    const list =
+        [...map.entries()]
+        .sort(
+            (a,b) =>
+            b[1] - a[1]
+        )
+        .slice(0,10);
+
+
+    const box =
+        document.getElementById(
+            "topProducts"
+        );
+
+
+    if(!list.length){
+
+        box.innerHTML =
+            emptyHTML(
+                "🛍️",
+                "No product sales yet"
+            );
+
+        return;
+
+    }
+
+
+    box.innerHTML = `
+
+        <table>
+
+            <thead>
+
+                <tr>
+
+                    <th>PRODUCT</th>
+                    <th>QUANTITY SOLD</th>
+
+                </tr>
+
+            </thead>
+
+            <tbody>
+
+                ${list.map(
+                    ([name,qty]) => `
+
+                    <tr>
+
+                        <td>
+                            <strong>
+                                ${escapeHTML(name)}
+                            </strong>
+                        </td>
+
+                        <td>
+                            ${qty}
+                        </td>
+
+                    </tr>
+
+                `
+                ).join("")}
+
+            </tbody>
+
+        </table>
+
+    `;
+
+}
+
+
+/* =====================================================
+   CHART
+===================================================== */
+
+function renderChart(
+    elementId,
+    days
+){
+
+    const box =
+        document.getElementById(
+            elementId
+        );
+
+
+    if(!box)
+        return;
+
+
+    const data = [];
+
+
+    for(let i=days-1;i>=0;i--){
+
+        const date =
+            new Date();
+
+
+        date.setHours(
+            0,0,0,0
+        );
+
+
+        date.setDate(
+            date.getDate() - i
+        );
+
+
+        const next =
+            new Date(date);
+
+
+        next.setDate(
+            next.getDate() + 1
+        );
+
+
+        let total = 0;
+
+
+        orders.forEach(o => {
+
+            if(!o.createdAt)
+                return;
+
+
+            let d;
+
+
+            if(
+                o.createdAt.toDate
+            ){
+
+                d =
+                    o.createdAt.toDate();
+
+            }else{
+
+                d =
+                    new Date(
+                        o.createdAt
+                    );
+
+            }
+
+
+            if(
+                d >= date &&
+                d < next &&
+                o.orderStatus !==
+                "Cancelled"
+            ){
+
+                total +=
+                    Number(
+                        o.total || 0
+                    );
+
+            }
+
+        });
+
+
+        data.push({
+
+            label:
+                date.toLocaleDateString(
+                    "en-IN",
+                    {
+                        weekday:"short"
+                    }
+                ),
+
+            total:total
+
+        });
+
+    }
+
+
+    const max =
+        Math.max(
+            ...data.map(
+                x => x.total
+            ),
+            1
+        );
+
+
+    box.innerHTML =
+        data.map(d => `
+
+            <div class="bar-wrap">
+
+                <div style="
+                    font-size:8px;
+                    color:var(--muted);
+                ">
+                    ₹${shortMoney(d.total)}
+                </div>
+
+                <div
+                    class="bar"
+                    style="
+                        height:${Math.max(
+                            4,
+                            (
+                                d.total / max
+                            ) * 180
+                        )}px;
+                    "
+                    title="₹${money(d.total)}"
+                ></div>
+
+                <div class="bar-label">
+                    ${d.label}
+                </div>
+
+            </div>
+
+        `).join("");
+
+}
+
+
+/* =====================================================
+   ALERTS
+===================================================== */
+
+function renderQuickAlerts(){
+
+    const box =
+        document.getElementById(
+            "quickAlerts"
+        );
+
+
+    const newOrders =
+        orders.filter(
+            o =>
+            o.orderStatus ===
+            "New"
+        ).length;
+
+
+    const pending =
+        orders.filter(
+            o =>
+            [
+                "Accepted",
+                "Processing",
+                "Out for Delivery"
+            ].includes(
+                o.orderStatus
+            )
+        ).length;
+
+
+    const lowStock =
+        products.filter(
+            p =>
+            Number(p.stock) < 10
+        ).length;
+
+
+    const alerts = [];
+
+
+    if(newOrders){
+
+        alerts.push([
+            "📦",
+            newOrders +
+            " new order(s)",
+            "Needs your attention"
+        ]);
+
+    }
+
+
+    if(pending){
+
+        alerts.push([
+            "🚚",
+            pending +
+            " delivery order(s)",
+            "Pending completion"
+        ]);
+
+    }
+
+
+    if(lowStock){
+
+        alerts.push([
+            "⚠️",
+            lowStock +
+            " low stock product(s)",
+            "Check inventory"
+        ]);
+
+    }
+
+
+    if(!alerts.length){
+
+        alerts.push([
+            "✅",
+            "Everything looks good",
+            "No urgent alerts"
+        ]);
+
+    }
+
+
+    box.innerHTML =
+        alerts.map(
+            a => `
+
+            <div class="alert">
+
+                <div class="alert-icon">
+                    ${a[0]}
+                </div>
+
+                <div>
+
+                    <strong>
+                        ${a[1]}
+                    </strong>
+
+                    <span>
+                        ${a[2]}
+                    </span>
+
+                </div>
+
+            </div>
+
+        `
+        ).join("");
+
+}
+
+
+function renderAlerts(){
+
+    const box =
+        document.getElementById(
+            "alertList"
+        );
+
+
+    const alerts = [];
+
+
+    orders
+    .filter(
+        o =>
+        o.orderStatus === "New"
+    )
+    .slice(0,10)
+    .forEach(o => {
+
+        alerts.push({
+
+            icon:"📦",
+
+            title:
+                "New order " +
+                (
+                    o.orderId ||
+                    o.firestoreId
+                ),
+
+            text:
+                (
+                    o.customer?.name ||
+                    "Customer"
+                ) +
+                " • ₹" +
+                money(
+                    o.total || 0
+                )
+
+        });
+
+    });
+
+
+    products
+    .filter(
+        p =>
+        Number(p.stock) < 10
+    )
+    .forEach(p => {
+
+        alerts.push({
+
+            icon:"⚠️",
+
+            title:
+                "Low stock: " +
+                p.name,
+
+            text:
+                p.stock +
+                " units remaining"
+
+        });
+
+    });
+
+
+    if(!alerts.length){
+
+        box.innerHTML =
+            emptyHTML(
+                "🔔",
+                "No alerts"
+            );
+
+        return;
+
+    }
+
+
+    box.innerHTML =
+        alerts.map(a => `
+
+            <div class="alert">
+
+                <div class="alert-icon">
+                    ${a.icon}
+                </div>
+
+                <div>
+
+                    <strong>
+                        ${escapeHTML(a.title)}
+                    </strong>
+
+                    <span>
+                        ${escapeHTML(a.text)}
+                    </span>
+
+                </div>
+
+            </div>
+
+        `).join("");
+
+}
+
+
+/* =====================================================
+   GLOBAL SEARCH
+===================================================== */
+
+function globalSearch(){
+
+    const value =
+        document.getElementById(
+            "globalSearch"
+        ).value.trim();
+
+
+    if(!value)
+        return;
+
+
+    showPageByName(
+        "orders"
+    );
+
+
+    const input =
+        document.getElementById(
+            "orderSearch"
+        );
+
+
+    if(input){
+
+        input.value = value;
+
+        renderOrders();
+
+    }
+
+}
+
+
+/* =====================================================
+   SETTINGS
+===================================================== */
+
+function saveSettings(){
+
+    const settings = {
+
+        business:
+            document.getElementById(
+                "settingBusiness"
+            ).value,
+
+        phone:
+            document.getElementById(
+                "settingPhone"
+            ).value,
+
+        email:
+            document.getElementById(
+                "settingEmail"
+            ).value
+
+    };
+
+
+    localStorage.setItem(
+        "dreamzzAdminSettings",
+        JSON.stringify(
+            settings
+        )
+    );
+
+
+    showToast(
+        "Settings saved."
+    );
+
+}
+
+
+/* =====================================================
+   MODAL
+===================================================== */
+
+function closeModal(id){
+
+    document
+        .getElementById(id)
+        .classList.remove("show");
+
+}
+
+
+document
+    .querySelectorAll(".modal-overlay")
+    .forEach(modal => {
+
+        modal.addEventListener(
+            "click",
+            function(e){
+
+                if(
+                    e.target === modal
+                ){
+
+                    modal.classList.remove(
+                        "show"
+                    );
+
+                }
+
+            }
+        );
+
+    });
+
+
+/* =====================================================
+   HELPERS
+===================================================== */
+
+function money(value){
+
+    return Number(
+        value || 0
+    ).toLocaleString(
+        "en-IN",
+        {
+            maximumFractionDigits:0
+        }
+    );
+
+}
+
+
+function shortMoney(value){
+
+    value =
+        Number(value || 0);
+
+
+    if(value >= 100000){
+
+        return (
+            value / 100000
+        ).toFixed(1) + "L";
+
+    }
+
+
+    if(value >= 1000){
+
+        return (
+            value / 1000
+        ).toFixed(1) + "K";
+
+    }
+
+
+    return Math.round(value);
+
+}
+
+
+function statusHTML(status){
+
+    const s =
+        status ||
+        "New";
+
+
+    let cls =
+        "new";
+
+
+    if(s === "Accepted")
+        cls = "accepted";
+
+    if(s === "Processing")
+        cls = "processing";
+
+    if(s === "Out for Delivery")
+        cls = "out";
+
+    if(s === "Delivered")
+        cls = "delivered";
+
+    if(s === "Cancelled")
+        cls = "cancelled";
+
+
+    return `
+
+        <span class="status ${cls}">
+            ${escapeHTML(s)}
+        </span>
+
+    `;
+
+}
+
+
+function emptyHTML(
+    icon,
+    text
+){
+
+    return `
+
+        <div class="empty">
+
+            <div class="empty-icon">
+                ${icon}
+            </div>
+
+            <strong>
+                ${text}
+            </strong>
+
+        </div>
+
+    `;
+
+}
+
+
+function escapeHTML(value){
+
+    return String(
+        value ?? ""
+    )
+    .replace(
+        /&/g,
+        "&amp;"
+    )
+    .replace(
+        /</g,
+        "&lt;"
+    )
+    .replace(
+        />/g,
+        "&gt;"
+    )
+    .replace(
+        /"/g,
+        "&quot;"
+    )
+    .replace(
+        /'/g,
+        "&#039;"
+    );
+
+}
+
+
+function showToast(message){
+
+    const toast =
+        document.getElementById(
+            "toast"
+        );
+
+
+    toast.textContent =
+        message;
+
+
+    toast.classList.add(
+        "show"
+    );
+
+
+    setTimeout(
+        () =>
+        toast.classList.remove(
+            "show"
+        ),
+        2500
+    );
+
+}
+
+
+/* =====================================================
+   INITIALIZE
+===================================================== */
+
+checkAdmin();
+
+</script>
+
+</body>
+</html>
