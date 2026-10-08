@@ -1,6 +1,9 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
+<script src="firebase-config.js"></script>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
@@ -1203,156 +1206,238 @@ document
 
 /* ================= PLACE ORDER ================= */
 
-placeOrder.addEventListener(
-    "click",
-    function(){
+placeOrder.addEventListener("click", async function () {
 
-        /* GET FORM VALUES */
+    /* ================= FORM VALUES ================= */
 
-        const firstName =
-            document.getElementById("firstName").value.trim();
+    const firstName =
+        document.getElementById("firstName").value.trim();
 
-        const lastName =
-            document.getElementById("lastName").value.trim();
+    const lastName =
+        document.getElementById("lastName").value.trim();
 
-        const phone =
-            document.getElementById("phone").value.trim();
+    const phone =
+        document.getElementById("phone").value.trim();
 
-        const address =
-            document.getElementById("address").value.trim();
+    const email =
+        document.getElementById("email").value.trim();
 
-        const city =
-            document.getElementById("city").value.trim();
+    const address =
+        document.getElementById("address").value.trim();
 
-        const pincode =
-            document.getElementById("pincode").value.trim();
+    const city =
+        document.getElementById("city").value.trim();
 
-
-        /* VALIDATION */
-
-        if(!firstName){
-
-            alert("Please enter your first name.");
-
-            return;
-        }
+    const pincode =
+        document.getElementById("pincode").value.trim();
 
 
-        if(!lastName){
+    /* ================= VALIDATION ================= */
 
-            alert("Please enter your last name.");
+    if (!firstName) {
+        alert("Please enter your first name.");
+        return;
+    }
 
-            return;
-        }
+    if (!lastName) {
+        alert("Please enter your last name.");
+        return;
+    }
+
+    if (!/^[0-9]{10}$/.test(phone)) {
+        alert("Please enter a valid 10 digit phone number.");
+        return;
+    }
+
+    if (!address) {
+        alert("Please enter your delivery address.");
+        return;
+    }
+
+    if (!city) {
+        alert("Please enter your city.");
+        return;
+    }
+
+    if (!/^[0-9]{6}$/.test(pincode)) {
+        alert("Please enter a valid 6 digit pincode.");
+        return;
+    }
+
+    if (cart.length === 0) {
+        alert("Your cart is empty.");
+        return;
+    }
 
 
-        if(!/^[0-9]{10}$/.test(phone)){
+    /* ================= PAYMENT ================= */
 
-            alert(
-                "Please enter a valid 10 digit phone number."
+    const payment =
+        document.querySelector(
+            'input[name="payment"]:checked'
+        ).value;
+
+
+    /* ================= DELIVERY ================= */
+
+    const deliveryInput =
+        document.querySelector(
+            'input[name="delivery"]:checked'
+        );
+
+    const delivery =
+        deliveryInput.dataset.name;
+
+    const deliveryFee =
+        Number(deliveryInput.value);
+
+
+    /* ================= CALCULATE TOTAL ================= */
+
+    let subtotal = 0;
+
+    cart.forEach(item => {
+
+        const product =
+            products.find(
+                p => p.id === Number(item.id)
             );
 
-            return;
-        }
+        if (!product) return;
+
+        const quantity =
+            Number(item.qty) || 1;
+
+        subtotal +=
+            product.price * quantity;
+
+    });
+
+    const total =
+        subtotal + deliveryFee;
 
 
-        if(!address){
+    /* ================= ORDER ID ================= */
 
-            alert("Please enter your delivery address.");
-
-            return;
-        }
-
-
-        if(!city){
-
-            alert("Please enter your city.");
-
-            return;
-        }
+    const orderId =
+        "DREAMZZ-" +
+        Math.floor(
+            100000 + Math.random() * 900000
+        );
 
 
-        if(!/^[0-9]{6}$/.test(pincode)){
+    /* ================= BUTTON ================= */
 
-            alert(
-                "Please enter a valid 6 digit pincode."
-            );
-
-            return;
-        }
+    placeOrder.disabled = true;
+    placeOrder.textContent = "Placing Order...";
 
 
-        if(cart.length === 0){
+    /* ================= ORDER DATA ================= */
 
-            alert(
-                "Your cart is empty."
-            );
+    const order = {
 
-            return;
-        }
+        orderId: orderId,
+
+        customer: {
+
+            firstName: firstName,
+            lastName: lastName,
+            name: `${firstName} ${lastName}`,
+
+            phone: phone,
+            email: email,
+
+            address: address,
+            city: city,
+            pincode: pincode,
+
+            state: "Kerala",
+            country: "India"
+
+        },
+
+        items: cart.map(item => {
+
+            const product =
+                products.find(
+                    p => p.id === Number(item.id)
+                );
+
+            return {
+
+                id: Number(item.id),
+
+                name: product
+                    ? product.name
+                    : "Unknown Product",
+
+                price: product
+                    ? product.price
+                    : 0,
+
+                emoji: product
+                    ? product.emoji
+                    : "📦",
+
+                quantity:
+                    Number(item.qty) || 1,
+
+                total:
+                    product
+                        ? product.price *
+                          (Number(item.qty) || 1)
+                        : 0
+
+            };
+
+        }),
+
+        subtotal: subtotal,
+
+        delivery: {
+            method: delivery,
+            fee: deliveryFee
+        },
+
+        total: total,
+
+        paymentMethod: payment,
+
+        paymentStatus:
+            payment === "COD"
+                ? "PENDING"
+                : "PENDING",
+
+        orderStatus: "New",
+
+        createdAt:
+            firebase.firestore.FieldValue.serverTimestamp()
+
+    };
 
 
-        /* PAYMENT */
+    /* ================= SAVE TO FIREBASE ================= */
 
-        const payment =
-            document.querySelector(
-                'input[name="payment"]:checked'
-            ).value;
+    try {
 
-
-        /* DELIVERY */
-
-        const delivery =
-            document.querySelector(
-                'input[name="delivery"]:checked'
-            ).dataset.name;
+        await db
+            .collection("orders")
+            .add(order);
 
 
-        /* ORDER ID */
+        /* SAVE CUSTOMER DETAILS */
 
-        const orderId =
-            "DREAMZZ-" +
-            Math.floor(
-                100000 + Math.random() * 900000
-            );
+        saveCustomerDetails();
 
 
-        /* SAVE ORDER */
-
-        const order = {
-
-            orderId:orderId,
-
-            customer:{
-                firstName:firstName,
-                lastName:lastName,
-                phone:phone,
-                email:
-                    document.getElementById("email").value.trim(),
-                address:address,
-                city:city,
-                pincode:pincode
-            },
-
-            delivery:delivery,
-
-            payment:payment,
-
-            items:cart,
-
-            total:Number(
-                totalElement.textContent
-                .replace(/,/g,"")
-            ),
-
-            date:new Date().toISOString()
-
-        };
-
+        /* SAVE LAST ORDER */
 
         localStorage.setItem(
             "dreamzzLastOrder",
-            JSON.stringify(order)
+            JSON.stringify({
+                ...order,
+                createdAt: new Date().toISOString()
+            })
         );
 
 
@@ -1380,13 +1465,30 @@ placeOrder.addEventListener(
 
 
         window.scrollTo({
-            top:0,
-            behavior:"smooth"
+            top: 0,
+            behavior: "smooth"
         });
 
-    }
-);
 
+    } catch (error) {
+
+        console.error(
+            "Firebase Order Error:",
+            error
+        );
+
+        alert(
+            "Order save cheyyan pattiyilla. Internet connection check cheythu try again."
+        );
+
+        placeOrder.disabled = false;
+
+        placeOrder.textContent =
+            "Place Your Order →";
+
+    }
+
+});
 
 /* ================= INITIAL LOAD ================= */
 
