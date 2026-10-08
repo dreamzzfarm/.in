@@ -1,0 +1,1476 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>DREAMZZ Checkout</title>
+
+<style>
+@import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700;800&family=Playfair+Display:wght@600;700&display=swap');
+
+:root{
+    --green:#02462e;
+    --green2:#08734d;
+    --gold:#fec700;
+    --cream:#f7f5ed;
+    --dark:#101412;
+    --muted:#68736d;
+    --white:#fff;
+    --border:#e5e8e4;
+    --red:#c62828;
+}
+
+*{
+    box-sizing:border-box;
+}
+
+html{
+    scroll-behavior:smooth;
+}
+
+body{
+    margin:0;
+    font-family:'DM Sans',sans-serif;
+    background:var(--cream);
+    color:var(--dark);
+}
+
+/* ================= HEADER ================= */
+
+.header{
+    height:75px;
+    background:#fff;
+    border-bottom:1px solid var(--border);
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    padding:0 7%;
+    position:sticky;
+    top:0;
+    z-index:20;
+}
+
+.logo{
+    font-size:22px;
+    font-weight:800;
+    color:var(--dark);
+}
+
+.logo span{
+    display:inline-grid;
+    place-items:center;
+    width:34px;
+    height:34px;
+    background:var(--gold);
+    color:var(--green);
+    border-radius:10px;
+    margin-right:7px;
+}
+
+.secure{
+    color:var(--muted);
+    font-size:13px;
+    font-weight:600;
+}
+
+/* ================= PAGE ================= */
+
+.page{
+    max-width:1200px;
+    margin:auto;
+    padding:45px 5%;
+}
+
+.title{
+    margin-bottom:30px;
+}
+
+.title .eyebrow{
+    color:var(--green);
+    font-size:12px;
+    font-weight:800;
+    letter-spacing:2px;
+}
+
+.title h1{
+    font:700 42px 'Playfair Display',serif;
+    margin:8px 0;
+}
+
+.title p{
+    color:var(--muted);
+}
+
+/* ================= GRID ================= */
+
+.checkout-grid{
+    display:grid;
+    grid-template-columns:1.45fr .75fr;
+    gap:25px;
+    align-items:start;
+}
+
+/* ================= CARD ================= */
+
+.card{
+    background:#fff;
+    border:1px solid var(--border);
+    border-radius:18px;
+    padding:28px;
+    margin-bottom:20px;
+}
+
+.card h2{
+    margin:0 0 20px;
+    font-size:21px;
+}
+
+.section-number{
+    width:30px;
+    height:30px;
+    border-radius:50%;
+    display:inline-grid;
+    place-items:center;
+    background:var(--green);
+    color:#fff;
+    font-size:13px;
+    margin-right:8px;
+}
+
+/* ================= FORM ================= */
+
+.form-grid{
+    display:grid;
+    grid-template-columns:1fr 1fr;
+    gap:15px;
+}
+
+.form-group{
+    margin-bottom:15px;
+}
+
+.form-group.full{
+    grid-column:1/-1;
+}
+
+label{
+    display:block;
+    font-size:12px;
+    font-weight:800;
+    margin-bottom:7px;
+}
+
+input,
+select,
+textarea{
+    width:100%;
+    border:1px solid var(--border);
+    background:#fafbf9;
+    padding:13px;
+    border-radius:9px;
+    outline:none;
+    font-family:inherit;
+}
+
+input:focus,
+select:focus,
+textarea:focus{
+    border-color:var(--green);
+    background:#fff;
+}
+
+textarea{
+    min-height:90px;
+    resize:vertical;
+}
+
+/* ================= DELIVERY ================= */
+
+.delivery-option,
+.payment-option{
+    border:1px solid var(--border);
+    border-radius:12px;
+    padding:15px;
+    margin-bottom:10px;
+    cursor:pointer;
+    display:flex;
+    align-items:center;
+    gap:12px;
+}
+
+.delivery-option:hover,
+.payment-option:hover{
+    border-color:var(--green);
+    background:#f5faf6;
+}
+
+.delivery-option input,
+.payment-option input{
+    width:auto;
+}
+
+.option-content{
+    flex:1;
+}
+
+.option-title{
+    font-weight:800;
+    display:block;
+}
+
+.option-desc{
+    color:var(--muted);
+    font-size:12px;
+    margin-top:3px;
+}
+
+.option-price{
+    color:var(--green);
+    font-weight:800;
+}
+
+/* ================= ORDER SUMMARY ================= */
+
+.summary{
+    position:sticky;
+    top:100px;
+}
+
+.summary h2{
+    margin-bottom:18px;
+}
+
+.summary-items{
+    max-height:400px;
+    overflow:auto;
+}
+
+.item{
+    display:flex;
+    align-items:center;
+    gap:12px;
+    padding:13px 0;
+    border-bottom:1px solid var(--border);
+}
+
+.item-img{
+    width:58px;
+    height:58px;
+    border-radius:10px;
+    background:#eef3ed;
+    display:grid;
+    place-items:center;
+    font-size:32px;
+    flex-shrink:0;
+}
+
+.item-info{
+    flex:1;
+}
+
+.item-name{
+    font-weight:700;
+    font-size:14px;
+}
+
+.item-qty{
+    color:var(--muted);
+    font-size:12px;
+    margin-top:4px;
+}
+
+.item-price{
+    font-weight:800;
+    font-size:14px;
+}
+
+/* ================= TOTAL ================= */
+
+.price-row{
+    display:flex;
+    justify-content:space-between;
+    padding:10px 0;
+    color:#4e5953;
+    font-size:14px;
+}
+
+.price-row.total{
+    border-top:1px solid var(--border);
+    margin-top:8px;
+    padding-top:18px;
+    font-size:21px;
+    color:var(--dark);
+    font-weight:800;
+}
+
+.price-row.total strong{
+    color:var(--green);
+}
+
+/* ================= BUTTON ================= */
+
+.place-order{
+    width:100%;
+    border:0;
+    background:var(--green);
+    color:#fff;
+    padding:16px;
+    border-radius:10px;
+    font-weight:800;
+    font-size:15px;
+    cursor:pointer;
+    margin-top:18px;
+}
+
+.place-order:hover{
+    background:var(--green2);
+}
+
+.place-order:disabled{
+    background:#aeb8b2;
+    cursor:not-allowed;
+}
+
+/* ================= EMPTY ================= */
+
+.empty{
+    text-align:center;
+    padding:60px 20px;
+}
+
+.empty-icon{
+    font-size:65px;
+}
+
+.empty h2{
+    margin:15px 0 8px;
+}
+
+.empty p{
+    color:var(--muted);
+}
+
+.shop-btn{
+    display:inline-block;
+    margin-top:15px;
+    padding:13px 20px;
+    background:var(--green);
+    color:#fff;
+    border-radius:9px;
+    font-weight:800;
+}
+
+/* ================= SUCCESS ================= */
+
+.success{
+    display:none;
+    max-width:650px;
+    margin:70px auto;
+    background:#fff;
+    border-radius:20px;
+    padding:50px 30px;
+    text-align:center;
+    border:1px solid var(--border);
+}
+
+.success.show{
+    display:block;
+}
+
+.success-icon{
+    width:80px;
+    height:80px;
+    border-radius:50%;
+    background:#e5f4ea;
+    color:var(--green);
+    display:grid;
+    place-items:center;
+    font-size:40px;
+    margin:auto;
+}
+
+.success h1{
+    font:700 38px 'Playfair Display',serif;
+}
+
+.order-id{
+    background:#f3f6f2;
+    padding:14px;
+    border-radius:9px;
+    margin:20px 0;
+}
+
+.order-id strong{
+    color:var(--green);
+}
+
+/* ================= MOBILE ================= */
+
+@media(max-width:850px){
+
+    .checkout-grid{
+        grid-template-columns:1fr;
+    }
+
+    .summary{
+        position:static;
+        grid-row:1;
+    }
+
+}
+
+@media(max-width:550px){
+
+    .header{
+        padding:0 4%;
+    }
+
+    .secure{
+        display:none;
+    }
+
+    .page{
+        padding:30px 4%;
+    }
+
+    .title h1{
+        font-size:34px;
+    }
+
+    .form-grid{
+        grid-template-columns:1fr;
+    }
+
+    .form-group.full{
+        grid-column:auto;
+    }
+
+    .card{
+        padding:20px;
+    }
+
+}
+</style>
+<script>
+document.addEventListener("DOMContentLoaded", function () {
+
+    const loggedIn =
+        localStorage.getItem("dreamzzLoggedIn") === "true";
+
+    const user =
+        JSON.parse(localStorage.getItem("dreamzzUser") || "null");
+
+    if (!loggedIn || !user) {
+        return;
+    }
+
+    // Customer details
+    const name = (user.name || "").trim();
+    const parts = name.split(" ");
+
+    const firstName = parts.shift() || "";
+    const lastName = parts.join(" ");
+
+    // Fill checkout fields
+    const firstNameInput =
+        document.getElementById("firstName");
+
+    const lastNameInput =
+        document.getElementById("lastName");
+
+    const phoneInput =
+        document.getElementById("phone");
+
+    const emailInput =
+        document.getElementById("email");
+
+    if (firstNameInput)
+        firstNameInput.value = firstName;
+
+    if (lastNameInput)
+        lastNameInput.value = lastName;
+
+    if (phoneInput)
+        phoneInput.value = user.phone || "";
+
+    if (emailInput)
+        emailInput.value = user.email || "";
+
+});
+</script></head>
+
+<body>
+
+<!-- ================= HEADER ================= -->
+
+<header class="header">
+
+    <a href="shop.html" class="logo">
+        <span>D</span>DREAMZZ
+    </a>
+
+    <div class="secure">
+        🔒 Secure Checkout
+    </div>
+
+</header>
+
+
+<!-- ================= MAIN ================= -->
+
+<main class="page">
+
+    <div class="title">
+
+        <div class="eyebrow">
+            DREAMZZ MARKETPLACE
+        </div>
+
+        <h1>Complete Your Order</h1>
+
+        <p>
+            Enter your delivery details and choose your preferred payment method.
+        </p>
+
+    </div>
+
+
+    <!-- ================= CHECKOUT GRID ================= -->
+
+    <div class="checkout-grid">
+
+
+        <!-- ================= LEFT ================= -->
+
+        <div>
+
+
+            <!-- ADDRESS -->
+
+            <div class="card">
+
+                <h2>
+                    <span class="section-number">1</span>
+                    Delivery Address
+                </h2>
+
+
+                <div class="form-grid">
+
+                    <div class="form-group">
+
+                        <label>First Name *</label>
+
+                        <input
+                            type="text"
+                            id="firstName"
+                            placeholder="First name"
+                            required
+                        >
+
+                    </div>
+
+
+                    <div class="form-group">
+
+                        <label>Last Name *</label>
+
+                        <input
+                            type="text"
+                            id="lastName"
+                            placeholder="Last name"
+                            required
+                        >
+
+                    </div>
+
+
+                    <div class="form-group">
+
+                        <label>Phone *</label>
+
+                        <input
+                            type="tel"
+                            id="phone"
+                            placeholder="10 digit mobile number"
+                            maxlength="10"
+                            required
+                        >
+
+                    </div>
+
+
+                    <div class="form-group">
+
+                        <label>Email</label>
+
+                        <input
+                            type="email"
+                            id="email"
+                            placeholder="your@email.com"
+                        >
+
+                    </div>
+
+
+                    <div class="form-group full">
+
+                        <label>Address *</label>
+
+                        <textarea
+                            id="address"
+                            placeholder="House name, street, landmark..."
+                            required
+                        ></textarea>
+
+                    </div>
+
+
+                    <div class="form-group">
+
+                        <label>City *</label>
+
+                        <input
+                            type="text"
+                            id="city"
+                            placeholder="City"
+                            required
+                        >
+
+                    </div>
+
+
+                    <div class="form-group">
+
+                        <label>Pincode *</label>
+
+                        <input
+                            type="text"
+                            id="pincode"
+                            placeholder="6 digit pincode"
+                            maxlength="6"
+                            required
+                        >
+
+                    </div>
+
+                </div>
+
+            </div>
+
+
+            <!-- DELIVERY -->
+
+            <div class="card">
+
+                <h2>
+                    <span class="section-number">2</span>
+                    Delivery Method
+                </h2>
+
+
+                <label class="delivery-option">
+
+                    <input
+                        type="radio"
+                        name="delivery"
+                        value="0"
+                        data-name="Standard Delivery"
+                        checked
+                    >
+
+                    <span class="option-content">
+
+                        <span class="option-title">
+                            Standard Delivery
+                        </span>
+
+                        <span class="option-desc">
+                            Delivery within 2–4 days
+                        </span>
+
+                    </span>
+
+                    <span class="option-price">
+                        FREE
+                    </span>
+
+                </label>
+
+
+                <label class="delivery-option">
+
+                    <input
+                        type="radio"
+                        name="delivery"
+                        value="50"
+                        data-name="Fast Delivery"
+                    >
+
+                    <span class="option-content">
+
+                        <span class="option-title">
+                            Fast Delivery
+                        </span>
+
+                        <span class="option-desc">
+                            Faster delivery service
+                        </span>
+
+                    </span>
+
+                    <span class="option-price">
+                        ₹50
+                    </span>
+
+                </label>
+
+            </div>
+
+
+            <!-- PAYMENT -->
+
+            <div class="card">
+
+                <h2>
+                    <span class="section-number">3</span>
+                    Payment Method
+                </h2>
+
+
+                <label class="payment-option">
+
+                    <input
+                        type="radio"
+                        name="payment"
+                        value="COD"
+                        checked
+                    >
+
+                    <span class="option-content">
+
+                        <span class="option-title">
+                            Cash on Delivery
+                        </span>
+
+                        <span class="option-desc">
+                            Pay when your order arrives
+                        </span>
+
+                    </span>
+
+                </label>
+
+
+                <label class="payment-option">
+
+                    <input
+                        type="radio"
+                        name="payment"
+                        value="ONLINE"
+                    >
+
+                    <span class="option-content">
+
+                        <span class="option-title">
+                            Online Payment
+                        </span>
+
+                        <span class="option-desc">
+                            UPI / Card / Net Banking
+                        </span>
+
+                    </span>
+
+                </label>
+
+            </div>
+
+        </div>
+
+
+        <!-- ================= RIGHT ================= -->
+
+        <aside class="card summary">
+
+            <h2>
+                Your Order
+            </h2>
+
+
+            <div
+                id="checkoutItems"
+                class="summary-items"
+            ></div>
+
+
+            <div class="price-row">
+
+                <span>Subtotal</span>
+
+                <strong>
+                    ₹<span id="subtotal">0</span>
+                </strong>
+
+            </div>
+
+
+            <div class="price-row">
+
+                <span>Delivery</span>
+
+                <strong>
+                    ₹<span id="deliveryFee">0</span>
+                </strong>
+
+            </div>
+
+
+            <div class="price-row total">
+
+                <span>Total</span>
+
+                <strong>
+                    ₹<span id="checkoutTotal">0</span>
+                </strong>
+
+            </div>
+
+
+            <button
+                class="place-order"
+                id="placeOrder"
+            >
+                Place Your Order →
+            </button>
+
+
+            <p style="
+                text-align:center;
+                color:#68736d;
+                font-size:11px;
+                margin:15px 0 0;
+            ">
+                🔒 Your information is secure
+            </p>
+
+        </aside>
+
+    </div>
+
+</main>
+
+
+<!-- ================= SUCCESS ================= -->
+
+<section
+    class="success"
+    id="success"
+>
+
+    <div class="success-icon">
+        ✓
+    </div>
+
+    <h1>
+        Order Placed!
+    </h1>
+
+    <p>
+        Thank you for shopping with DREAMZZ.
+        Your order has been received successfully.
+    </p>
+
+    <div class="order-id">
+
+        Order ID:
+        <strong id="orderId">
+            DREAMZZ-000000
+        </strong>
+
+    </div>
+
+    <p style="color:#68736d;">
+        We will contact you regarding delivery.
+    </p>
+
+    <a
+        href="shop.html"
+        class="shop-btn"
+    >
+        Continue Shopping
+    </a>
+
+</section>
+
+
+<script>
+
+/* =====================================================
+   DREAMZZ CHECKOUT
+===================================================== */
+
+
+/* ================= PRODUCTS ================= */
+
+const products = [
+
+    {
+        id:1,
+        name:"Fresh Cow Milk",
+        price:65,
+        emoji:"🥛"
+    },
+
+    {
+        id:2,
+        name:"Farm Fresh Curd",
+        price:55,
+        emoji:"🥣"
+    },
+
+    {
+        id:3,
+        name:"Pure Farm Butter",
+        price:120,
+        emoji:"🧈"
+    },
+
+    {
+        id:4,
+        name:"Fresh Tilapia Fish",
+        price:280,
+        emoji:"🐟"
+    },
+
+    {
+        id:5,
+        name:"Farm Rohu Fish",
+        price:320,
+        emoji:"🐠"
+    },
+
+    {
+        id:6,
+        name:"Fresh Prawns",
+        price:450,
+        emoji:"🦐"
+    },
+
+    {
+        id:7,
+        name:"Organic Honey",
+        price:250,
+        emoji:"🍯"
+    },
+
+    {
+        id:8,
+        name:"Farm Fresh Eggs",
+        price:90,
+        emoji:"🥚"
+    },
+
+    {
+        id:9,
+        name:"Fresh Vegetables",
+        price:150,
+        emoji:"🥬"
+    },
+
+    {
+        id:10,
+        name:"Homemade Paneer",
+        price:180,
+        emoji:"🧀"
+    },
+
+    {
+        id:11,
+        name:"Farm Banana",
+        price:70,
+        emoji:"🍌"
+    },
+
+    {
+        id:12,
+        name:"Natural Farm Food",
+        price:350,
+        emoji:"🌾"
+    }
+
+];
+
+
+/* ================= CART ================= */
+
+let cart =
+    JSON.parse(
+        localStorage.getItem("dreamzzCart")
+    ) || [];
+
+
+/* ================= ELEMENTS ================= */
+
+const checkoutItems =
+    document.getElementById("checkoutItems");
+
+const subtotalElement =
+    document.getElementById("subtotal");
+
+const deliveryFeeElement =
+    document.getElementById("deliveryFee");
+
+const totalElement =
+    document.getElementById("checkoutTotal");
+
+const placeOrder =
+    document.getElementById("placeOrder");
+
+const checkoutPage =
+    document.querySelector(".page");
+
+const successPage =
+    document.getElementById("success");
+
+
+/* ================= FORMAT MONEY ================= */
+
+function money(value){
+
+    return Number(value)
+        .toLocaleString("en-IN");
+
+}
+
+
+/* ================= RENDER CART ================= */
+
+function renderCheckout(){
+
+    checkoutItems.innerHTML = "";
+
+    let subtotal = 0;
+
+
+    /* EMPTY CART */
+
+    if(cart.length === 0){
+
+        checkoutItems.innerHTML = `
+
+            <div class="empty">
+
+                <div class="empty-icon">
+                    🛒
+                </div>
+
+                <h2>
+                    Your cart is empty
+                </h2>
+
+                <p>
+                    Add some DREAMZZ products before checkout.
+                </p>
+
+                <a
+                    href="shop.html"
+                    class="shop-btn"
+                >
+                    Go to Shop
+                </a>
+
+            </div>
+
+        `;
+
+        placeOrder.disabled = true;
+
+        subtotalElement.textContent = "0";
+        deliveryFeeElement.textContent = "0";
+        totalElement.textContent = "0";
+
+        return;
+    }
+
+
+    placeOrder.disabled = false;
+
+
+    /* CART PRODUCTS */
+
+    cart.forEach(item => {
+
+        const product =
+            products.find(
+                p => p.id === Number(item.id)
+            );
+
+
+        if(!product) return;
+
+
+        const quantity =
+            Number(item.qty) || 1;
+
+
+        const itemTotal =
+            product.price * quantity;
+
+
+        subtotal += itemTotal;
+
+
+        checkoutItems.innerHTML += `
+
+            <div class="item">
+
+                <div class="item-img">
+                    ${product.emoji}
+                </div>
+
+
+                <div class="item-info">
+
+                    <div class="item-name">
+                        ${product.name}
+                    </div>
+
+                    <div class="item-qty">
+                        Quantity: ${quantity}
+                    </div>
+
+                </div>
+
+
+                <div class="item-price">
+
+                    ₹${money(itemTotal)}
+
+                </div>
+
+            </div>
+
+        `;
+
+    });
+
+
+    /* DELIVERY */
+
+    const selectedDelivery =
+        document.querySelector(
+            'input[name="delivery"]:checked'
+        );
+
+
+    const deliveryFee =
+        selectedDelivery
+        ? Number(selectedDelivery.value)
+        : 0;
+
+
+    const total =
+        subtotal + deliveryFee;
+
+
+    subtotalElement.textContent =
+        money(subtotal);
+
+    deliveryFeeElement.textContent =
+        money(deliveryFee);
+
+    totalElement.textContent =
+        money(total);
+
+}
+
+
+/* ================= DELIVERY CHANGE ================= */
+
+document
+.querySelectorAll('input[name="delivery"]')
+.forEach(option => {
+
+    option.addEventListener(
+        "change",
+        renderCheckout
+    );
+
+});
+
+
+/* ================= PLACE ORDER ================= */
+
+placeOrder.addEventListener(
+    "click",
+    function(){
+
+        /* GET FORM VALUES */
+
+        const firstName =
+            document.getElementById("firstName").value.trim();
+
+        const lastName =
+            document.getElementById("lastName").value.trim();
+
+        const phone =
+            document.getElementById("phone").value.trim();
+
+        const address =
+            document.getElementById("address").value.trim();
+
+        const city =
+            document.getElementById("city").value.trim();
+
+        const pincode =
+            document.getElementById("pincode").value.trim();
+
+
+        /* VALIDATION */
+
+        if(!firstName){
+
+            alert("Please enter your first name.");
+
+            return;
+        }
+
+
+        if(!lastName){
+
+            alert("Please enter your last name.");
+
+            return;
+        }
+
+
+        if(!/^[0-9]{10}$/.test(phone)){
+
+            alert(
+                "Please enter a valid 10 digit phone number."
+            );
+
+            return;
+        }
+
+
+        if(!address){
+
+            alert("Please enter your delivery address.");
+
+            return;
+        }
+
+
+        if(!city){
+
+            alert("Please enter your city.");
+
+            return;
+        }
+
+
+        if(!/^[0-9]{6}$/.test(pincode)){
+
+            alert(
+                "Please enter a valid 6 digit pincode."
+            );
+
+            return;
+        }
+
+
+        if(cart.length === 0){
+
+            alert(
+                "Your cart is empty."
+            );
+
+            return;
+        }
+
+
+        /* PAYMENT */
+
+        const payment =
+            document.querySelector(
+                'input[name="payment"]:checked'
+            ).value;
+
+
+        /* DELIVERY */
+
+        const delivery =
+            document.querySelector(
+                'input[name="delivery"]:checked'
+            ).dataset.name;
+
+
+        /* ORDER ID */
+
+        const orderId =
+            "DREAMZZ-" +
+            Math.floor(
+                100000 + Math.random() * 900000
+            );
+
+
+        /* SAVE ORDER */
+
+        const order = {
+
+            orderId:orderId,
+
+            customer:{
+                firstName:firstName,
+                lastName:lastName,
+                phone:phone,
+                email:
+                    document.getElementById("email").value.trim(),
+                address:address,
+                city:city,
+                pincode:pincode
+            },
+
+            delivery:delivery,
+
+            payment:payment,
+
+            items:cart,
+
+            total:Number(
+                totalElement.textContent
+                .replace(/,/g,"")
+            ),
+
+            date:new Date().toISOString()
+
+        };
+
+
+        localStorage.setItem(
+            "dreamzzLastOrder",
+            JSON.stringify(order)
+        );
+
+
+        /* CLEAR CART */
+
+        localStorage.removeItem(
+            "dreamzzCart"
+        );
+
+
+        /* SHOW SUCCESS */
+
+        document.getElementById(
+            "orderId"
+        ).textContent = orderId;
+
+
+        checkoutPage.style.display =
+            "none";
+
+
+        successPage.classList.add(
+            "show"
+        );
+
+
+        window.scrollTo({
+            top:0,
+            behavior:"smooth"
+        });
+
+    }
+);
+
+
+/* ================= INITIAL LOAD ================= */
+
+renderCheckout();
+
+</script>
+
+<script>
+document.addEventListener("DOMContentLoaded", function () {
+
+    const loggedIn =
+        localStorage.getItem("dreamzzLoggedIn") === "true";
+
+    const user =
+        JSON.parse(localStorage.getItem("dreamzzUser") || "null");
+
+    if (!loggedIn || !user) return;
+
+
+    // Name split
+    const nameParts = (user.name || "").trim().split(" ");
+
+    const firstName = nameParts.shift() || "";
+    const lastName = nameParts.join(" ");
+
+
+    // Automatically fill EVERYTHING
+    const fields = {
+
+        firstName: firstName,
+        lastName: lastName,
+
+        phone: user.phone || "",
+        email: user.email || "",
+
+        address: user.address || "",
+        city: user.city || "",
+        pincode: user.pincode || "",
+
+        state: user.state || "Kerala",
+        country: user.country || "India"
+
+    };
+
+
+    Object.keys(fields).forEach(function (id) {
+
+        const input = document.getElementById(id);
+
+        if (input) {
+            input.value = fields[id];
+        }
+
+    });
+
+});
+function saveCustomerDetails() {
+
+    const user =
+        JSON.parse(
+            localStorage.getItem("dreamzzUser") || "null"
+        );
+
+    if (!user) return;
+
+    user.address =
+        document.getElementById("address")?.value || "";
+
+    user.city =
+        document.getElementById("city")?.value || "";
+
+    user.pincode =
+        document.getElementById("pincode")?.value || "";
+
+    user.state =
+        document.getElementById("state")?.value || "Kerala";
+
+    user.country =
+        document.getElementById("country")?.value || "India";
+
+    localStorage.setItem(
+        "dreamzzUser",
+        JSON.stringify(user)
+    );
+}
+</script></body>
+</html>
